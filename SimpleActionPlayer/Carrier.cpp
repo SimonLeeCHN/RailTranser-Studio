@@ -358,6 +358,7 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     {
         if(this->IsAllCarrierStatusSame("待机") == 0)
         {
+            flagActionplayerWaittingTrigger = false;
             emit RequestAfterAllCarStandby();
         }
     }

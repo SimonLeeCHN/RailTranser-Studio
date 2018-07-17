@@ -43,6 +43,7 @@ private slots:
 public slots:
     void OnSetCarrierStatus(int carNum,int stu,int pos);
     void OnSetCarrierProfile(QByteArray config);
+    void OnActionplayerwaittingTrigger();
 
 signals:
     void RequestPrintDebugMessage(QString text);

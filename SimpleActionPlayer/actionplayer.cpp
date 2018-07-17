@@ -145,6 +145,7 @@ void ActionPlayer::doNextStep()
 
             this->m_pActuator->generateMotion(tempList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
+            emit RequestTriggerAfterCarrierStandby();
 
             break;
         }
@@ -185,6 +186,7 @@ void ActionPlayer::doNextStep()
 
             this->m_pActuator->generateMotion(tempList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
+            emit RequestTriggerAfterCarrierStandby();
 
             break;
         }

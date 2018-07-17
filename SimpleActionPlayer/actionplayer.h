@@ -36,6 +36,8 @@ public slots:
 signals:
     void RequestPrintMessage(QString str);
 
+    void RequestTriggerAfterCarrierStandby();
+
 private:
     QList<QString> m_lCmdList;
     ActionActuator* m_pActuator = NULL;

@@ -11,6 +11,8 @@
 #define CARSTATUS_STANDBY       0x02
 #define CARSTATUS_RUNNING        0x03
 
+bool flagActionplayerWaittingTrigger = false;
+
 /*  Translate Map   */
 QMap<QString,int> map_StatusCmd =
 {
@@ -352,7 +354,13 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     m_HeartbeatRecordList[carNum - 1] = true;
 
     //TODO:检查是否所有载体车都处于待机状态，若是发送信号给mainwindow,用以判断是否触发doNextStep
-
+    if(flagActionplayerWaittingTrigger)
+    {
+        if(this->IsAllCarrierStatusSame("待机") == 0)
+        {
+            emit RequestAfterAllCarStandby();
+        }
+    }
 
 }
 
@@ -363,4 +371,9 @@ void Carrier::OnSetCarrierProfile(QByteArray config)
 
     //运行速度
     this->setData(this->index(carNum - 1,INFORM_CARSPEED_COLUMN),ConvertCmdToString(map_SpeedCmd,config.at(1)));
+}
+
+void Carrier::OnActionplayerwaittingTrigger()
+{
+    flagActionplayerWaittingTrigger = true;
 }

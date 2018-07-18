@@ -312,16 +312,23 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
 {
     Q_UNUSED(checked);
 
-    QList<QByteArray> tempList;
-
-    for(int i = 0;i < m_iCarrierNum;i++)
+    if((m_pCarrier->IsAllCarrierStatusSame("待机")) == 0)
     {
-        QByteArray tempArray;
+        QList<QByteArray> tempList;
 
-        tempArray.append(i+1);      //车辆号
-        tempArray.append(2);        //数据
+        for(int i = 0;i < m_iCarrierNum;i++)
+        {
+            QByteArray tempArray;
 
-        tempList<<tempArray;
+            tempArray.append(i+1);      //车辆号
+            tempArray.append(2);        //数据
+
+            tempList<<tempArray;
+        }
+        m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
     }
-    m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
+    else
+    {
+        this->printMessage(QString(tr("载体车未都处于待机状态")));
+    }
 }

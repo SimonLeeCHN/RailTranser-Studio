@@ -4,6 +4,13 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QString>
+#include <QStringList>
+
+union setPos
+{
+    int integer;
+    unsigned char uch[4];
+};
 
 /*
  *  RealActionActuator
@@ -28,7 +35,7 @@ void RealActionActuator::generateMotion(QList<QString> list)
         int leaderCarGoal = (cmdStrList[2]).toInt();
 
         //数值非零
-        if(!leaderCar || !groupCarCount)
+        if(!leaderCar || !groupCarCount || !leaderCarGoal)
         {
             QMessageBox::warning(NULL,tr("command error"),tr("数量错误！"));
             return;
@@ -46,10 +53,14 @@ void RealActionActuator::generateMotion(QList<QString> list)
             tempArray.append(leaderCar + carIndex);
 
             //注意目标点占位4
-            int tempGoal = leaderCarGoal + carIndex;
+            setPos tempGoal ;
+            tempGoal.integer = leaderCarGoal + carIndex;
+
             QByteArray baGoal;
-            baGoal.fill(0,4);
-            baGoal.append(tempGoal);
+            baGoal.append(tempGoal.uch[3]);
+            baGoal.append(tempGoal.uch[2]);
+            baGoal.append(tempGoal.uch[1]);
+            baGoal.append(tempGoal.uch[0]);
             baGoal = baGoal.right(4);
 
             tempArray.append(baGoal);

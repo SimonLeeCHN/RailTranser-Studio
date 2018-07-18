@@ -38,6 +38,68 @@ QByteArray HexStringToByteArray(QString HexString)
     return ret;
 }
 
+void TransferDataBeforeEmit(QByteArray &data)
+{
+    //先 FE -> FEFC
+    int replaceIndex = 4;
+    while(1)
+    {
+        replaceIndex = data.indexOf(QByteArray("\xFE"),replaceIndex);
+        if(replaceIndex == -1)
+            break;
+        else
+        {
+            data.replace(replaceIndex,1,QByteArray("\xFE\xFC"));
+            replaceIndex += 2;
+        }
+    }
+
+    //再 FF -> FEFD
+    replaceIndex = 4;
+    while(1)
+    {
+        replaceIndex = data.indexOf(QByteArray("\xFF"),replaceIndex);
+        if((replaceIndex == -1) || (replaceIndex == (data.count() - 1)))
+            break;
+        else
+        {
+            data.replace(replaceIndex,1,QByteArray("\xFE\xFD"));
+            replaceIndex += 2;
+        }
+    }
+}
+
+void TransferDataAfterRecive(QByteArray &data)
+{
+    //先 FEFD->FF
+    int replaceIndex = 4;
+    while(1)
+    {
+        replaceIndex = data.indexOf(QByteArray("\xFE\xFD"),replaceIndex);
+        if(replaceIndex == -1)
+            break;
+        else
+        {
+            data.replace(replaceIndex,2,QByteArray("\xFF"));
+            replaceIndex += 1;
+        }
+    }
+
+    //再 FEFC->FE
+    replaceIndex = 4;
+    while(1)
+    {
+        replaceIndex = data.indexOf(QByteArray("\xFE\xFC"),replaceIndex);
+        if(replaceIndex == -1)
+            break;
+        else
+        {
+            data.replace(replaceIndex,2,QByteArray("\xFE"));
+            replaceIndex += 1;
+        }
+    }
+}
+
 StationPort::StationPort()
 {
     //参数初始化
@@ -107,6 +169,11 @@ void StationPort::packetPackage(QList<QByteArray> &list,int port)
         //添加地址
         list[i].prepend(char(0));
         list[i].prepend(char(carNum + ADDRESS_CARRIER_BASE));
+
+        //转译:包长度不用管.数据、地址、端口号中 FF->FE FD ,FE->FE FC
+        //因为端口号避免了问题，在添加地址后进行转译即可
+        TransferDataBeforeEmit(list[i]);
+
         //添加端口 *2
         list[i].prepend(port);
         list[i].prepend(port);
@@ -123,6 +190,7 @@ void StationPort::packetPackage(QList<QByteArray> &list,int port)
 void StationPort::SplitPortdataPackage()
 {
     //将串口读来的数据进行分包加入list
+    //去掉了包头包尾
 
     QByteArray packageTail("\xFF",1);
     int index = 0,packageTailLen = packageTail.length(),packageHeadLen = 1;
@@ -131,6 +199,10 @@ void StationPort::SplitPortdataPackage()
     while((index = m_RawData.indexOf(packageTail,from)) != -1)
     {
         m_List_PackageData << m_RawData.mid(from,index - from);
+
+        //翻译:包长度不用管.数据、地址、端口号中 FE FD->FF ,FE FC->FE
+        TransferDataAfterRecive(m_List_PackageData.last());
+
         from = index + packageHeadLen + packageTailLen;
     }
     m_RawData = m_RawData.right(m_RawData.length() - (from - packageTailLen));

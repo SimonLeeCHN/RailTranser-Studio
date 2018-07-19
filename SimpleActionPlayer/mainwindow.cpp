@@ -148,6 +148,8 @@ void MainWindow::componentInit()
     connect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
     connect(m_pCarrier,Carrier::RequestAfterAllCarStandby,m_pActionPlayer,ActionPlayer::doNextStep);
     connect(m_pActionPlayer,ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,Carrier::OnActionplayerwaittingTrigger);
+    connect(m_pRealActionActuator,RealActionActuator::RequestStartHeartbeatTimer,m_pCarrier,Carrier::OnStartHeartbeatTimer);
+    connect(m_pRealActionActuator,RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,Carrier::OnStopHearbeatTimer);
     connect(m_pStationPort,StationPort::RequestSetCarrierStatus,m_pCarrier,Carrier::OnSetCarrierStatus);
     connect(m_pStationPort,StationPort::RequestSetCarrierProfile,m_pCarrier,Carrier::OnSetCarrierProfile);
 
@@ -168,6 +170,8 @@ void MainWindow::componentDeinit()
     disconnect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
     disconnect(m_pCarrier,Carrier::RequestAfterAllCarStandby,m_pActionPlayer,ActionPlayer::doNextStep);
     disconnect(m_pActionPlayer,ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,Carrier::OnActionplayerwaittingTrigger);
+    disconnect(m_pRealActionActuator,RealActionActuator::RequestStartHeartbeatTimer,m_pCarrier,Carrier::OnStartHeartbeatTimer);
+    disconnect(m_pRealActionActuator,RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,Carrier::OnStopHearbeatTimer);
     disconnect(m_pStationPort,StationPort::RequestSetCarrierStatus,m_pCarrier,Carrier::OnSetCarrierStatus);
     disconnect(m_pStationPort,StationPort::RequestSetCarrierProfile,m_pCarrier,Carrier::OnSetCarrierProfile);
     delete m_pCarrier;
@@ -278,7 +282,7 @@ void MainWindow::on_BTN_Stop_clicked(bool checked)
 
 void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item)
 {
-    if(m_pActionPlayer->isPlaying())
+    if((m_pActionPlayer->getPlayerStatus()) == PLAYERSTU_PLAYING)
     {
         QMessageBox::warning(this,tr("Player error"),tr("当前正在播放"));
         return;
@@ -288,7 +292,7 @@ void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item
 
     m_pActionPlayer->loadActionFile(item->data(Qt::UserRole).toString());
     m_pActionPlayer->setActuator(m_pRealActionActuator);
-    m_pActionPlayer->doNextStep();
+    m_pActionPlayer->startActionPlayer();
 }
 
 void MainWindow::on_LW_ActionSortcutList_customContextMenuRequested(const QPoint &pos)

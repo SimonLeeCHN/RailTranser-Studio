@@ -71,25 +71,20 @@ void ActionPlayer::setActuator(ActionActuator *acac)
 
 void ActionPlayer::stopActionPlayer()
 {
-    m_iPlayerStatus = PLAYERSTU_STANDBY;
+    m_iPlayerStatus = PLAYERSTU_STOP;
     m_iCmdPointer = 0;
     m_lCmdList.clear();
 }
 
-bool ActionPlayer::isPlaying()
+void ActionPlayer::startActionPlayer()
 {
-    if(PLAYERSTU_PLAYING == this->m_iPlayerStatus)
-        return true;
-    else
-        return false;
+    m_iPlayerStatus = PLAYERSTU_STANDBY;
+    this->doNextStep();
 }
 
-bool ActionPlayer::isWaitingTriger()
+int ActionPlayer::getPlayerStatus()
 {
-    if(PLAYERSTU_WAITING == this->m_iPlayerStatus)
-        return true;
-    else
-        return false;
+    return m_iPlayerStatus;
 }
 
 void ActionPlayer::doNextStep()
@@ -103,10 +98,14 @@ void ActionPlayer::doNextStep()
         return;
     }
 
+    if(m_iPlayerStatus == PLAYERSTU_STOP)
+    {
+        emit RequestPrintMessage(QString(tr("Player已被停止")));
+        return;
+    }
+
     QStringList tStrList = m_lCmdList.at(m_iCmdPointer).split(" ");
     m_iCmdPointer++;
-
-    m_iPlayerStatus = PLAYERSTU_PLAYING;
 
     switch(map_StrcmdToCode[tStrList[0]])
     {

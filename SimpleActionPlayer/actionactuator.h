@@ -28,6 +28,8 @@ public:
 
 signals:
     void RequestSendPackageData(QList<QByteArray> list,int port);
+    void RequestStopHeartbeatTimer();
+    void RequestStartHeartbeatTimer();
 
 private:
     QList<QString> m_lCmdParm;

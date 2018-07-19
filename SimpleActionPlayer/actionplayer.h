@@ -6,9 +6,10 @@
 #include <QMap>
 #include "actionactuator.h"
 
-#define PLAYERSTU_STANDBY   0
-#define PLAYERSTU_PLAYING   1
-#define PLAYERSTU_WAITING   2
+#define PLAYERSTU_STANDBY   1
+#define PLAYERSTU_PLAYING   2
+#define PLAYERSTU_WAITING   3
+#define PLAYERSTU_STOP      4
 
 #define CMD_STA 1
 #define CMD_END 2
@@ -25,10 +26,10 @@ public:
     ~ActionPlayer();
     bool loadActionFile(QString fileName);
     void setActuator(ActionActuator* acac);
+    void startActionPlayer();
     void stopActionPlayer();
 
-    bool isPlaying();
-    bool isWaitingTriger();
+    int getPlayerStatus();
 
 public slots:
     void doNextStep();

@@ -70,10 +70,11 @@ void RealActionActuator::generateMotion(QList<QString> list)
     }
 
     qDebug()<<packedList;
-    emit RequestSendPackageData(packedList,PORT_GOALMOVE_SEND);
 
-    //应该等待载体车全部返回停止指令再调用doNextStep
-//    m_pParentPlayer->doNextStep();
+    //在发送命令前关闭心跳包，避免双触发
+    emit RequestStopHeartbeatTimer();
+    emit RequestSendPackageData(packedList,PORT_GOALMOVE_SEND);
+    emit RequestStartHeartbeatTimer();
 }
 
 

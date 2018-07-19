@@ -34,13 +34,12 @@ private:
 
     void InitModelData();
 
-    void StartHeartbeatTimer();
-    void StopHearbeatTimer();
-
 private slots:
     void OnHeartbeatTimeup();
 
 public slots:
+    void OnStartHeartbeatTimer();
+    void OnStopHearbeatTimer();
     void OnSetCarrierStatus(int carNum,int stu,int pos);
     void OnSetCarrierProfile(QByteArray config);
     void OnActionplayerwaittingTrigger();

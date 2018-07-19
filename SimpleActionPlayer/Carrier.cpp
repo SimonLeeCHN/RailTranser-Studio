@@ -70,7 +70,7 @@ Carrier::Carrier(int carrierNum, QObject *parent) : QStandardItemModel(carrierNu
     InitModelData();
 
     //开始心跳包
-    //StartHeartbeatTimer();
+    OnStartHeartbeatTimer();
 
 }
 
@@ -124,18 +124,6 @@ void Carrier::InitModelData()
         QStandardItem* tempItem = this->item(row);
         tempItem->setIcon(QIcon(":/img/carrier_standby"));
     }
-}
-
-void Carrier::StartHeartbeatTimer()
-{
-    connect(m_pHeartbeatTimer,&QTimer::timeout,this,&Carrier::OnHeartbeatTimeup);
-    m_pHeartbeatTimer->start(HEARTBEAT_TIME);
-}
-
-void Carrier::StopHearbeatTimer()
-{
-    disconnect(m_pHeartbeatTimer,&QTimer::timeout,this,&Carrier::OnHeartbeatTimeup);
-    m_pHeartbeatTimer->stop();
 }
 
 int Carrier::IsAllCarrierStatusSame(QString status)
@@ -234,6 +222,18 @@ void Carrier::CarrierEntiretyControl(QString strCmd)
 
 
 /*      SLOT    */
+
+void Carrier::OnStartHeartbeatTimer()
+{
+    connect(m_pHeartbeatTimer,&QTimer::timeout,this,&Carrier::OnHeartbeatTimeup);
+    m_pHeartbeatTimer->start(HEARTBEAT_TIME);
+}
+
+void Carrier::OnStopHearbeatTimer()
+{
+    disconnect(m_pHeartbeatTimer,&QTimer::timeout,this,&Carrier::OnHeartbeatTimeup);
+    m_pHeartbeatTimer->stop();
+}
 
 void Carrier::OnHeartbeatTimeup()
 {

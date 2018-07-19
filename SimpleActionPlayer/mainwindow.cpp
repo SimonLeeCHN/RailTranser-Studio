@@ -166,6 +166,7 @@ void MainWindow::componentDeinit()
     delete m_pRealActionActuator;
 
     //载体车
+    m_iCarrierNum = 0;
     disconnect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
     disconnect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
     disconnect(m_pCarrier,Carrier::RequestAfterAllCarStandby,m_pActionPlayer,ActionPlayer::doNextStep);
@@ -316,7 +317,7 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
 {
     Q_UNUSED(checked);
 
-    if((m_pCarrier->IsAllCarrierStatusSame("待机")) == 0)
+    if(!((m_pCarrier->IsAllCarrierStatusSame("运动中")) == 0))
     {
         QList<QByteArray> tempList;
 

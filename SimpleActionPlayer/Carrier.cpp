@@ -248,6 +248,10 @@ void Carrier::OnHeartbeatTimeup()
             QString str = "Carrier " + QString::number(i+1) + " no heartbeat back!";
             emit RequestPrintDebugMessage(str);
 
+            //修改图标
+            QStandardItem* tempItem = this->item(i);
+            tempItem->setIcon(QIcon(""));
+
 #if ENABLE_HEARTBEAT_ERROR_OPTION
 
             //紧急停车
@@ -271,13 +275,13 @@ void Carrier::OnHeartbeatTimeup()
         tempList << tempArray;
     }
 
-    emit RequestSendPackageData(tempList,PORT_HEARTBEAT_SEND);
-
     //清除回应记录
     for (int i = 0;i < m_iCarrierNum;i++)
     {
         m_HeartbeatRecordList[i] = false;
     }
+
+    emit RequestSendPackageData(tempList,PORT_HEARTBEAT_SEND);
 
 }
 
@@ -359,6 +363,9 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
         if(this->IsAllCarrierStatusSame("待机") == 0)
         {
             flagActionplayerWaittingTrigger = false;
+            //test
+            emit RequestPrintDebugMessage("triger from carrier");
+
             emit RequestAfterAllCarStandby();
         }
     }

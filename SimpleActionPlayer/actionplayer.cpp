@@ -204,6 +204,8 @@ void ActionPlayer::doNextStep()
             //修改指针
             m_iCmdPointer = tStrList.at(1).toInt();
             this->doNextStep();
+
+            break;
         }
         default:
         {

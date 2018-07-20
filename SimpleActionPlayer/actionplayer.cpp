@@ -54,7 +54,8 @@ bool ActionPlayer::loadActionFile(QString fileName)
     {
         QString tempStr = tempFile.readLine();
         tempStr.chop(1);
-        m_lCmdList << tempStr;
+        if(!tempStr.isEmpty())
+            m_lCmdList << tempStr;
     }
 
     tempFile.close();
@@ -74,12 +75,6 @@ void ActionPlayer::stopActionPlayer()
     m_iPlayerStatus = PLAYERSTU_STOP;
     m_iCmdPointer = 0;
     m_lCmdList.clear();
-}
-
-void ActionPlayer::startActionPlayer()
-{
-    m_iPlayerStatus = PLAYERSTU_STANDBY;
-    this->doNextStep();
 }
 
 int ActionPlayer::getPlayerStatus()

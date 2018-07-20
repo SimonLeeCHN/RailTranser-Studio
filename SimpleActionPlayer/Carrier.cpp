@@ -357,7 +357,7 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     //记录心跳包
     m_HeartbeatRecordList[carNum - 1] = true;
 
-    //TODO:检查是否所有载体车都处于待机状态，若是发送信号给mainwindow,用以判断是否触发doNextStep
+    //TODO:检查是否所有载体车都处于待机状态，用以判断是否触发doNextStep
     if(flagActionplayerWaittingTrigger)
     {
         if(this->IsAllCarrierStatusSame("待机") == 0)

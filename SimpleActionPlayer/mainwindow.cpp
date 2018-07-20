@@ -293,7 +293,7 @@ void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item
 
     m_pActionPlayer->loadActionFile(item->data(Qt::UserRole).toString());
     m_pActionPlayer->setActuator(m_pRealActionActuator);
-    m_pActionPlayer->startActionPlayer();
+    m_pActionPlayer->doNextStep();
 }
 
 void MainWindow::on_LW_ActionSortcutList_customContextMenuRequested(const QPoint &pos)

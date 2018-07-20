@@ -26,7 +26,6 @@ public:
     ~ActionPlayer();
     bool loadActionFile(QString fileName);
     void setActuator(ActionActuator* acac);
-    void startActionPlayer();
     void stopActionPlayer();
 
     int getPlayerStatus();

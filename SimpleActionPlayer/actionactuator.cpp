@@ -52,9 +52,9 @@ void RealActionActuator::generateMotion(QList<QString> list)
             //添加数据包要求的车辆号
             tempArray.append(leaderCar + carIndex);
 
-            //注意目标点占位4
+            //注意目标点占位4       基础倍率100
             setPos tempGoal ;
-            tempGoal.integer = leaderCarGoal + carIndex;
+            tempGoal.integer = leaderCarGoal + (carIndex * 100);
 
             QByteArray baGoal;
             baGoal.append(tempGoal.uch[3]);

@@ -3,8 +3,16 @@
 #include <QDebug>
 #include <QTime>
 #include <QTimer>
+#include <QString>
 #include <QtSingleApplication>
 #include <QFileInfo>
+
+#define CMD_STA 1
+#define CMD_END 2
+#define CMD_MOV 3
+#define CMD_DEY 4
+#define CMD_CMG 5
+#define CMD_JMP 6
 
 QMap<QString,int> map_StrcmdToCode =
 {
@@ -12,7 +20,8 @@ QMap<QString,int> map_StrcmdToCode =
     {"END",2},
     {"MOV",3},
     {"DEY",4},
-    {"CMG",5}
+    {"CMG",5},
+    {"JMP",6}
 };
 
 ActionPlayer::ActionPlayer()
@@ -183,6 +192,18 @@ void ActionPlayer::doNextStep()
             emit RequestTriggerAfterCarrierStandby();
 
             break;
+        }
+        case CMD_JMP:
+        {
+            qDebug()<<"play-cmd: JMP "<<tStrList[1];
+
+            //提示信息
+            QString strMessage = "JMP " + tStrList[1];
+            emit RequestPrintMessage(strMessage);
+
+            //修改指针
+            m_iCmdPointer = tStrList.at(1).toInt();
+            this->doNextStep();
         }
         default:
         {

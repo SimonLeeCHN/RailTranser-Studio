@@ -3,6 +3,8 @@
 #include <actionplayer.h>
 #include <QDebug>
 #include <QMessageBox>
+#include <QCoreApplication>
+#include <QTime>
 #include <QString>
 #include <QStringList>
 
@@ -91,5 +93,10 @@ VirtualActionActuator::VirtualActionActuator()
 void VirtualActionActuator::generateMotion(QList<QString> list)
 {
     qDebug()<<"VirtualActuator Motion:"<<list;
+
+    QTime _Timer = QTime::currentTime().addMSecs(1000);
+    while( QTime::currentTime() < _Timer )
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
     m_pParentPlayer->doNextStep();
 }

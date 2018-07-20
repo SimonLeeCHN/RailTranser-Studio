@@ -279,6 +279,7 @@ void MainWindow::on_BTN_Stop_clicked(bool checked)
         tempList<<tempArray;
     }
     m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
+    m_pActionPlayer->stopActionPlayer();
 }
 
 void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item)
@@ -293,6 +294,7 @@ void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item
 
     m_pActionPlayer->loadActionFile(item->data(Qt::UserRole).toString());
     m_pActionPlayer->setActuator(m_pRealActionActuator);
+    //m_pActionPlayer->setActuator(new VirtualActionActuator());
     m_pActionPlayer->doNextStep();
 }
 

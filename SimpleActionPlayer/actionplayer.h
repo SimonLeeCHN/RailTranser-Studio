@@ -11,12 +11,6 @@
 #define PLAYERSTU_WAITING   3
 #define PLAYERSTU_STOP      4
 
-#define CMD_STA 1
-#define CMD_END 2
-#define CMD_MOV 3
-#define CMD_DEY 4
-#define CMD_CMG 5
-
 
 class ActionPlayer :public QObject
 {

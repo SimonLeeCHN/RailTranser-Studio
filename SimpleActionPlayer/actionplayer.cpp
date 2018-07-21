@@ -108,6 +108,8 @@ void ActionPlayer::doNextStep()
         return;
     }
 
+    m_iPlayerStatus = PLAYERSTU_PLAYING;
+
     QStringList tStrList = m_lCmdList.at(m_iCmdPointer).split(" ");
     m_iCmdPointer++;
 
@@ -148,6 +150,7 @@ void ActionPlayer::doNextStep()
 
             this->m_pActuator->generateMotion(tempList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
+
             emit RequestTriggerAfterCarrierStandby();
 
             break;
@@ -189,6 +192,7 @@ void ActionPlayer::doNextStep()
 
             this->m_pActuator->generateMotion(tempList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
+
             emit RequestTriggerAfterCarrierStandby();
 
             break;

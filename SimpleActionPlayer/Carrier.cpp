@@ -1,5 +1,6 @@
 #include "Carrier.h"
 #include "QMessageBox"
+#include <QModelIndex>
 
 #define INFORM_NUM              4
 #define INFORM_CARMODEL_COLUMN  0           //车辆模型号
@@ -9,14 +10,16 @@
 
 #define CARSTATUS_ERROR         0x01
 #define CARSTATUS_STANDBY       0x02
-#define CARSTATUS_RUNNING        0x03
+#define CARSTATUS_RUNNING       0x03
+#define CARSTATUS_MISSING       0x04
 
-bool flagActionplayerWaittingTrigger = false;
+bool isPlayerWaittingTrigger = false;
+bool isLeastOneCarRunning = false;
 
 /*  Translate Map   */
 QMap<QString,int> map_StatusCmd =
 {
-    {"错误",0x01},{"待机",0x02},{"运动中",0x03}
+    {"错误",0x01},{"待机",0x02},{"运动中",0x03},{"丢失",0x04}
 };
 
 QMap<QString,int> map_SpeedCmd =
@@ -248,9 +251,12 @@ void Carrier::OnHeartbeatTimeup()
             QString str = "Carrier " + QString::number(i+1) + " no heartbeat back!";
             emit RequestPrintDebugMessage(str);
 
-            //修改图标
+            //修改图标与状态
+            QModelIndex tempIndex = this->index(i,INFORM_CARSTATUS_COLUMN);
             QStandardItem* tempItem = this->item(i);
             tempItem->setIcon(QIcon(""));
+            this->setData(tempIndex,QVariant(ConvertCmdToString(map_StatusCmd,CARSTATUS_MISSING)));
+
 
 #if ENABLE_HEARTBEAT_ERROR_OPTION
 
@@ -357,16 +363,31 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     //记录心跳包
     m_HeartbeatRecordList[carNum - 1] = true;
 
-    //TODO:检查是否所有载体车都处于待机状态，用以判断是否触发doNextStep
-    if(flagActionplayerWaittingTrigger)
+    //是否player等待触发
+    if(isPlayerWaittingTrigger)
     {
-        if(this->IsAllCarrierStatusSame("待机") == 0)
+        //在player等待触发的情况下，至少有一台车状态更新为了在运动中
+        //说明指令良好传达，可以在下次心跳包来临时检查是否所有车辆处于待机状态，触发下一目标点指令
+        if(stu == CARSTATUS_RUNNING)
         {
-            flagActionplayerWaittingTrigger = false;
+            isLeastOneCarRunning = true;
+        }
+
+        if(isLeastOneCarRunning && (this->IsAllCarrierStatusSame("待机") == 0))
+        {
+            isPlayerWaittingTrigger = false;
+            isLeastOneCarRunning = true;
+
             //test
             emit RequestPrintDebugMessage("triger from carrier");
 
             emit RequestAfterAllCarStandby();
+        }
+        else
+        {
+            //test
+            if(isLeastOneCarRunning == false)
+                emit RequestPrintDebugMessage("not at least one car running");
         }
     }
 
@@ -383,5 +404,5 @@ void Carrier::OnSetCarrierProfile(QByteArray config)
 
 void Carrier::OnActionplayerwaittingTrigger()
 {
-    flagActionplayerWaittingTrigger = true;
+    isPlayerWaittingTrigger = true;
 }

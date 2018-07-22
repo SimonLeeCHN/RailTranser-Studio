@@ -14,6 +14,8 @@
 #define CMD_CMG 5
 #define CMD_JMP 6
 
+int iGroupCmdNum = 1;
+
 QMap<QString,int> map_StrcmdToCode =
 {
     {"STA",1},
@@ -138,15 +140,26 @@ void ActionPlayer::doNextStep()
         {
             qDebug()<<"play-cmd: MOV ";
 
-            //发送移动某块车辆指令
-            QList<QString> tempList ;
-            QString tempStr;
-            tempStr = tStrList[1] + " " + tStrList[2] + " " + tStrList[3];
-            tempList<<tempStr;
+            //使指针指向当前MOV指令
+            m_iCmdPointer--;
 
-            //提示消息
-            QString strMessage = "MOV " + tempStr;
-            emit RequestPrintMessage(strMessage);
+            QList<QString> tempList;
+            for(int i = 0;i < iGroupCmdNum;i++)
+            {
+                QString tempStr;
+                QStringList tempStrList = m_lCmdList.at(m_iCmdPointer).split(" ");
+
+                tempStr = tempStrList[1] + " " + tempStrList[2] + " " + tempStrList[3];
+                tempList<<tempStr;
+
+                m_iCmdPointer++;
+
+                //提示消息
+                QString strMessage = "MOV " + tempStr;
+                emit RequestPrintMessage(strMessage);
+            }
+
+            iGroupCmdNum = 1;
 
             this->m_pActuator->generateMotion(tempList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
@@ -171,29 +184,11 @@ void ActionPlayer::doNextStep()
         case CMD_CMG:
         {
             qDebug()<<"play-cmd: CMG";
-            emit RequestPrintMessage("CMG");
 
-            //将后x个MOV指令一同打包发送
-            QList<QString> tempList;
-            for(int i = 0; i < (tStrList[1]).toInt() ; i++)
-            {
-                QString tempStr;
-                QStringList tempStrList = m_lCmdList.at(m_iCmdPointer).split(" ");
+            iGroupCmdNum = (tStrList[1]).toInt();
 
-                tempStr = tempStrList[1] + " " + tempStrList[2] + " " + tempStrList[3];
-                tempList<<tempStr;
-
-                m_iCmdPointer++;
-
-                //提示消息
-                QString strMessage = "MOV " + tempStr;
-                emit RequestPrintMessage(strMessage);
-            }
-
-            this->m_pActuator->generateMotion(tempList);
-            this->m_iPlayerStatus = PLAYERSTU_WAITING;
-
-            emit RequestTriggerAfterCarrierStandby();
+            emit RequestPrintMessage(QString(tr("CMG %1").arg(iGroupCmdNum)));
+            this->doNextStep();
 
             break;
         }

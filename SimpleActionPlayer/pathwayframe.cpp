@@ -5,7 +5,6 @@
 PathwayFrame::PathwayFrame(QWidget *parent) : QFrame(parent)
 {
     m_bPathwayLoaded = false;
-
 }
 
 void PathwayFrame::paintEvent(QPaintEvent *event)

@@ -376,7 +376,7 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
         if(isLeastOneCarRunning && (this->IsAllCarrierStatusSame("待机") == 0))
         {
             isPlayerWaittingTrigger = false;
-            isLeastOneCarRunning = true;
+            isLeastOneCarRunning = false;
 
             //test
             emit RequestPrintDebugMessage("triger from carrier");

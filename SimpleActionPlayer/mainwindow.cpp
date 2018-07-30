@@ -450,6 +450,7 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
             tempList<<tempArray;
         }
         m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
+        m_pActionPlayer->stopActionPlayer();
     }
     else
     {

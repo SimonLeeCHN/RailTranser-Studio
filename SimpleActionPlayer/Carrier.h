@@ -17,22 +17,18 @@ class Carrier : public QStandardItemModel
     Q_OBJECT
 
 public:
-    Carrier(int carrierNum, QObject *parent = nullptr);
+    Carrier(QList<QString> profileList, QObject *parent = nullptr);
     ~Carrier();
+
     void BandViewer(QTableView *viewerpoint);
-
     int IsAllCarrierStatusSame(QString status);
-
     void GetCarrierConfig();
     void SetCarrierConfig();
-    void CarrierEntiretyControl(QString strCmd);
 
 private:
     QTimer* m_pHeartbeatTimer = nullptr;
     QList<bool> m_HeartbeatRecordList;
     int m_iCarrierNum;
-
-    void InitModelData();
 
 private slots:
     void OnHeartbeatTimeup();

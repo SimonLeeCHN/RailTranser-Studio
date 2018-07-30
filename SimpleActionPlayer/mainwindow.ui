@@ -1141,47 +1141,6 @@ QPushButton#menuButton::menu-indicator{
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label">
-               <property name="font">
-                <font>
-                 <family>微软雅黑</family>
-                </font>
-               </property>
-               <property name="text">
-                <string>CarrierNum</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="SB_CarrierNum">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>42</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>59</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="minimum">
-                <number>1</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
             <widget class="QPushButton" name="BTN_Refresh">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1445,6 +1404,8 @@ Stop
     <property name="title">
      <string>文件</string>
     </property>
+    <addaction name="AC_file_addExistProjectFile"/>
+    <addaction name="separator"/>
     <addaction name="AC_file_addExistActionScriptFile"/>
    </widget>
    <addaction name="MENU_file"/>
@@ -1452,6 +1413,11 @@ Stop
   <action name="AC_file_addExistActionScriptFile">
    <property name="text">
     <string>添加现有动作脚本</string>
+   </property>
+  </action>
+  <action name="AC_file_addExistProjectFile">
+   <property name="text">
+    <string>添加现有工程文件</string>
    </property>
   </action>
  </widget>

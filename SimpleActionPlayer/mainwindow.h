@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QUrl>
 #include "stationport.h"
 #include "actionplayer.h"
 #include "Carrier.h"
@@ -22,6 +23,7 @@ public:
 public slots:
     void printMessage(QString str);
     void OnAddExistActionScriptFile();
+    void OnAddExistProjectFile();
 
 private slots:   
     void on_BTN_Refresh_clicked(bool checked);
@@ -42,6 +44,7 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    bool m_bIsProjectFillLoaded = false;
     StationPort *m_pStationPort = NULL;
     int m_iCarrierNum = 1;
     Carrier *m_pCarrier;
@@ -52,6 +55,7 @@ private:
     void initWindowStyle();
     void initMenu();
     void fillAvaliablePorts();
+    void loadProjectFile(QUrl fileUrl);
 
     void componentInit();
     void componentDeinit();

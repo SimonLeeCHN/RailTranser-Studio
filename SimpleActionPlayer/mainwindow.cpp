@@ -17,6 +17,9 @@
 
 #include "stationport.h"
 
+#define PROJECTFILE_TEXT_RFID       "RFID_POS\n"
+#define PROJECTFILE_TEXT_CARRIER    "CARRIER_PRF\n"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -114,6 +117,7 @@ void MainWindow::initWindowStyle()
 void MainWindow::initMenu()
 {
     connect(ui->AC_file_addExistActionScriptFile,&QAction::triggered,this,&MainWindow::OnAddExistActionScriptFile);
+    connect(ui->AC_file_addExistProjectFile,&QAction::triggered,this,&MainWindow::OnAddExistProjectFile);
 }
 
 void MainWindow::fillAvaliablePorts()
@@ -129,6 +133,114 @@ void MainWindow::fillAvaliablePorts()
     }
 }
 
+void MainWindow::loadProjectFile(QUrl fileUrl)
+{
+    //从文件读取工程配置：RFID点，载体车
+
+    //避免重复加载
+    if(m_bIsProjectFillLoaded)
+    {
+        QMessageBox::critical(this,tr("Cannot Open File"),tr("已加载文件"));
+        return;
+    }
+
+    QString filePath = fileUrl.toLocalFile();
+    QFile projectFile;
+    QFileInfo fileInfo(filePath);
+
+    //判断文件是否存在
+    if(!fileInfo.isFile())
+    {
+        QMessageBox::critical(this,tr("Cannot Open File"),tr("文件不存在"));
+        return;
+    }
+
+    //打开文件
+    projectFile.setFileName(filePath);
+    if(!projectFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this,tr("Cannot Open File"),tr("无法打开文件"));
+        return;
+    }
+
+    //1--加载RFID点位
+    int iRfidNum = 0;
+    QList<QString> rfidList;
+    projectFile.seek(0);
+    while(1)
+    {
+        if(0 == QString::compare(PROJECTFILE_TEXT_RFID,projectFile.readLine()))
+        {
+            iRfidNum = QString(projectFile.readLine()).toInt();
+            break;
+        }
+    }
+    for(int i = 0;i < iRfidNum;i++)
+    {
+        QString lineData = projectFile.readLine();
+        if(lineData.isEmpty())
+            break;
+
+        QStringList lineConfigList = lineData.split(" ");
+        if(lineConfigList.count() > 3)
+        {
+            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
+            return;
+        }
+
+        QString x = lineConfigList.at(0);
+        QString y = lineConfigList.at(1);
+        QString number = lineConfigList.at(2);
+        QString str = x + " " + y + " " + number;
+        rfidList<<str;
+    }
+    //TODO:给pathwayGV传入rfidList初始化RFID视图
+
+
+    //2--加载载体车信息
+    m_iCarrierNum = 1;
+    QList<QString> carrierList;
+    projectFile.seek(0);
+    while(1)
+    {
+        if(0 == QString::compare(PROJECTFILE_TEXT_CARRIER,projectFile.readLine()))
+        {
+            m_iCarrierNum = QString(projectFile.readLine()).toInt();
+            break;
+        }
+    }
+    for(int i = 0;i < m_iCarrierNum;i++)
+    {
+        QString lineData = projectFile.readLine();
+        if(lineData.isEmpty())
+            break;
+
+        QStringList lineConfigList = lineData.split(" ");
+        if(lineConfigList.count() > 4)
+        {
+            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
+            return;
+        }
+
+        QString model = QString(lineConfigList.at(0));
+        QString pos = QString(lineConfigList.at(1));
+        QString speed = QString(lineConfigList.at(2));
+        QString status = QString(lineConfigList.at(3));
+
+        QString str = model + " " + pos + " " + speed + " " + status;
+        carrierList<<str;
+
+    }
+    //初始化载体车
+    m_pCarrier = new Carrier(carrierList,this);
+    m_pCarrier->BandViewer(ui->TV_Carrier);
+
+
+    //已加载工程文件
+    m_bIsProjectFillLoaded = true;
+
+}
+
 void MainWindow::componentInit()
 {
     //动作播放器
@@ -140,9 +252,7 @@ void MainWindow::componentInit()
     connect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
 
     //载体车
-    m_iCarrierNum = ui->SB_CarrierNum->value();
-    m_pCarrier = new Carrier(m_iCarrierNum,this);
-    m_pCarrier->BandViewer(ui->TV_Carrier);
+    m_pCarrier->OnStartHeartbeatTimer();
 
     connect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
     connect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
@@ -166,7 +276,8 @@ void MainWindow::componentDeinit()
     delete m_pRealActionActuator;
 
     //载体车
-    m_iCarrierNum = 0;
+    m_pCarrier->OnStopHearbeatTimer();
+
     disconnect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
     disconnect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
     disconnect(m_pCarrier,Carrier::RequestAfterAllCarStandby,m_pActionPlayer,ActionPlayer::doNextStep);
@@ -183,7 +294,15 @@ void MainWindow::componentDeinit()
 void MainWindow::OnAddExistActionScriptFile()
 {
     QList<QUrl> list = QFileDialog::getOpenFileUrls(this,tr("添加现有动作文件"),QUrl("."),"*.casf");
-    this->addActionScriptFile(list);
+    if(!list.isEmpty())
+        this->addActionScriptFile(list);
+}
+
+void MainWindow::OnAddExistProjectFile()
+{
+    QUrl fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
+    if(!fileUrl.isEmpty())
+        this->loadProjectFile(fileUrl);
 }
 
 void MainWindow::printMessage(QString str)
@@ -215,7 +334,6 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
         ui->BTN_Stop->setEnabled(false);
         ui->BTN_ReLocate->setEnabled(false);
         ui->LW_ActionSortcutList->setEnabled(false);
-        ui->SB_CarrierNum->setEnabled(true);
 
         //解除组件
         this->componentDeinit();
@@ -248,7 +366,6 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
             ui->BTN_Stop->setEnabled(true);
             ui->BTN_ReLocate->setEnabled(true);
             ui->LW_ActionSortcutList->setEnabled(true);
-            ui->SB_CarrierNum->setEnabled(false);
 
         }
         else

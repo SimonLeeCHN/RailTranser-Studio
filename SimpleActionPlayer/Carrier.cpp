@@ -54,26 +54,53 @@ QString ConvertCmdToString(QMap<QString, int> &map, int val)
 
 
 
-Carrier::Carrier(int carrierNum, QObject *parent) : QStandardItemModel(carrierNum,INFORM_NUM,parent)
+Carrier::Carrier(QList<QString> profileList, QObject *parent) : QStandardItemModel(profileList.count(),INFORM_NUM,parent)
 {
     //设置表头
     QStringList modelHeader={tr("Model"),tr("Position"),tr("Speed"),tr("Status")};
     this->setHorizontalHeaderLabels(modelHeader);
 
     m_pHeartbeatTimer = new QTimer();
-    m_iCarrierNum = carrierNum;
+    m_iCarrierNum = profileList.count();
+
+    for(int row = 0; row < m_iCarrierNum;row++)
+    {
+        QStringList carProfList = QString(profileList.at(row)).split(" ");
+        for(int column = 0;column < INFORM_NUM;column++)
+        {
+            QModelIndex index = this->index(row,column);
+            switch (column)
+            {
+                case INFORM_CARMODEL_COLUMN:
+                    this->setData(index,QVariant(QString(carProfList.at(0))));
+                    break;
+                case INFORM_CARPOS_COLUMN:
+                    this->setData(index,QVariant(QString(carProfList.at(1)).toInt()));
+                    break;
+                case INFORM_CARSPEED_COLUMN:
+                    this->setData(index,QVariant(ConvertCmdToString(map_SpeedCmd,QString(carProfList.at(2)).toInt())));
+                    break;
+                case INFORM_CARSTATUS_COLUMN:
+                    this->setData(index,QVariant(ConvertCmdToString(map_StatusCmd,QString(carProfList.at(3)).toInt())));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    //设置图标
+    for(int row = 0;row < m_iCarrierNum;row++)
+    {
+        QStandardItem* tempItem = this->item(row);
+        tempItem->setIcon(QIcon(":/img/carrier_standby"));
+    }
 
     //初始化心跳包记录表
     for (int i = 0;i < m_iCarrierNum;i++)
     {
         m_HeartbeatRecordList << true;
     }
-
-    //初始化数据
-    InitModelData();
-
-    //开始心跳包
-    OnStartHeartbeatTimer();
 
 }
 
@@ -89,44 +116,6 @@ void Carrier::BandViewer(QTableView *viewerpoint)
 {
     //绑定模型与视图
     viewerpoint->setModel(this);
-}
-
-void Carrier::InitModelData()
-{
-    //从文件读或者默认值
-
-    //默认值
-    for(int column = 0;column < INFORM_NUM;column++)
-    {
-        for(int row = 0;row < m_iCarrierNum;row++)
-        {
-            QModelIndex index = this->index(row,column);
-            switch (column) 
-            {
-                case INFORM_CARMODEL_COLUMN:        //型号
-                    this->setData(index,QVariant(tr("M-80")));
-                    break;
-                case INFORM_CARPOS_COLUMN:          //位置
-                    this->setData(index,QVariant(0));
-                    break;
-                case INFORM_CARSPEED_COLUMN:        //速度
-                    this->setData(index,QVariant(tr("高速")));
-                    break;
-                case INFORM_CARSTATUS_COLUMN:       //状态
-                    this->setData(index,QVariant(tr("待机")));
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    //设置图标
-    for(int row = 0;row < m_iCarrierNum;row++)
-    {
-        QStandardItem* tempItem = this->item(row);
-        tempItem->setIcon(QIcon(":/img/carrier_standby"));
-    }
 }
 
 int Carrier::IsAllCarrierStatusSame(QString status)
@@ -203,24 +192,6 @@ void Carrier::SetCarrierConfig()
         configList << temp;
     }
     emit RequestSendPackageData(configList,PORT_CONFIG_SET);
-}
-
-void Carrier::CarrierEntiretyControl(QString strCmd)
-{
-    //TODO 载体车整体控制命令   急停  复位
-
-    QList<QByteArray> controlList;
-    for(int i = 0; i< m_iCarrierNum;i++)
-    {
-        //为stationport添加车辆号用于辨识
-        //再添加命令
-
-        QByteArray tempCmd;
-        tempCmd.append(i+1);
-        tempCmd.append(ConvertStringToCmd(map_ControlCmd,strCmd));
-        controlList << tempCmd;
-    }
-    emit RequestSendPackageData(controlList,PORT_CONTROL_SEND);
 }
 
 

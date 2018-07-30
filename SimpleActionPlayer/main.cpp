@@ -13,6 +13,18 @@ int main(int argc, char *argv[])
         return 0;
     }
     MainWindow w;
+    if(argc > 1)
+    {
+        //"file:///C:/Users/SEMENTS_LAPTAP/Desktop/temp.apd"
+        //C:\Users\SEMENTS_LAPTAP\Desktop\temp.apd
+        QString str = argv[1];
+        str.replace("\\","/");
+        QUrl fileUrl(str);
+        fileUrl.setScheme("file");
+
+        w.loadProjectFile(fileUrl);
+        w.printMessage(QString(argv[1]));
+    }
     w.show();
 
     return a.exec();

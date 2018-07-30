@@ -20,6 +20,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void loadProjectFile(QUrl fileUrl);
+
 public slots:
     void printMessage(QString str);
     void OnAddExistActionScriptFile();
@@ -55,7 +57,6 @@ private:
     void initWindowStyle();
     void initMenu();
     void fillAvaliablePorts();
-    void loadProjectFile(QUrl fileUrl);
 
     void componentInit();
     void componentDeinit();

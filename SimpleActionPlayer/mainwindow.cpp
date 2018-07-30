@@ -238,7 +238,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 
     //已加载工程文件
     m_bIsProjectFillLoaded = true;
-
+    ui->BTN_Option->setEnabled(true);
 }
 
 void MainWindow::componentInit()

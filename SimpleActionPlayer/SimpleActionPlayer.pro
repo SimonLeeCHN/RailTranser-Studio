@@ -31,7 +31,8 @@ SOURCES += \
     actionactuator.cpp \
     actionplayer.cpp \
     Carrier.cpp \
-    pathwayframe.cpp
+    pathwaygv.cpp \
+    rfidgraphicsitem.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -39,7 +40,8 @@ HEADERS += \
     actionactuator.h \
     actionplayer.h \
     Carrier.h \
-    pathwayframe.h
+    pathwaygv.h \
+    rfidgraphicsitem.h
 
 FORMS += \
         mainwindow.ui

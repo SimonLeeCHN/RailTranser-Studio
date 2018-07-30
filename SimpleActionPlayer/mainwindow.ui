@@ -1299,24 +1299,9 @@ Stop
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="PathwayFrame" name="FM_PathwayPalette">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>431</width>
-          <height>331</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+       <widget class="PathwayGV" name="GV_CarrierPathway">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -1427,10 +1412,9 @@ Stop
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>PathwayFrame</class>
-   <extends>QFrame</extends>
-   <header>pathwayframe.h</header>
-   <container>1</container>
+   <class>PathwayGV</class>
+   <extends>QGraphicsView</extends>
+   <header>pathwaygv.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

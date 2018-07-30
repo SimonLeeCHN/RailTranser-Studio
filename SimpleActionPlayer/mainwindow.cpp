@@ -182,7 +182,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
             break;
 
         QStringList lineConfigList = lineData.split(" ");
-        if(lineConfigList.count() > 3)
+        if(lineConfigList.count() != 3)
         {
             QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
             return;
@@ -194,7 +194,8 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
         QString str = x + " " + y + " " + number;
         rfidList<<str;
     }
-    //TODO:给pathwayGV传入rfidList初始化RFID视图
+    //给pathwayGV传入rfidList初始化RFID视图
+    ui->GV_CarrierPathway->initPathwayRfid(rfidList);
 
 
     //2--加载载体车信息
@@ -216,7 +217,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
             break;
 
         QStringList lineConfigList = lineData.split(" ");
-        if(lineConfigList.count() > 4)
+        if(lineConfigList.count() != 4)
         {
             QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
             return;
@@ -239,6 +240,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
     //已加载工程文件
     m_bIsProjectFillLoaded = true;
     ui->BTN_Option->setEnabled(true);
+    ui->GV_CarrierPathway->setEnabled(true);
 }
 
 void MainWindow::componentInit()
@@ -286,7 +288,6 @@ void MainWindow::componentDeinit()
     disconnect(m_pRealActionActuator,RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,Carrier::OnStopHearbeatTimer);
     disconnect(m_pStationPort,StationPort::RequestSetCarrierStatus,m_pCarrier,Carrier::OnSetCarrierStatus);
     disconnect(m_pStationPort,StationPort::RequestSetCarrierProfile,m_pCarrier,Carrier::OnSetCarrierProfile);
-    delete m_pCarrier;
 }
 
 /*      SLOT     */

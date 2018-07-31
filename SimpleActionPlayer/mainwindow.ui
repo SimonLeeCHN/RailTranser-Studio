@@ -1394,6 +1394,7 @@ Stop
     </property>
     <addaction name="AC_file_addExistProjectFile"/>
     <addaction name="separator"/>
+    <addaction name="separator"/>
     <addaction name="AC_file_addExistActionScriptFile"/>
    </widget>
    <addaction name="MENU_file"/>

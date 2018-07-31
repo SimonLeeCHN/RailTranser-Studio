@@ -32,7 +32,8 @@ SOURCES += \
     actionplayer.cpp \
     Carrier.cpp \
     pathwaygv.cpp \
-    rfidgraphicsitem.cpp
+    rfidgraphicsitem.cpp \
+    carriergraphicsitem.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -41,7 +42,8 @@ HEADERS += \
     actionplayer.h \
     Carrier.h \
     pathwaygv.h \
-    rfidgraphicsitem.h
+    rfidgraphicsitem.h \
+    carriergraphicsitem.h
 
 FORMS += \
         mainwindow.ui

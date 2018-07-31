@@ -1,5 +1,6 @@
 #include "pathwaygv.h"
 #include "rfidgraphicsitem.h"
+#include "carriergraphicsitem.h"
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -7,6 +8,8 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QWheelEvent>
+
+#define RFID_BASEDEV    100
 
 PathwayGV::PathwayGV(QWidget *parent) :
                 QGraphicsView(parent)
@@ -48,11 +51,37 @@ void PathwayGV::wheelEvent(QWheelEvent *event)
 
 }
 
+QPoint PathwayGV::transPosnumToGraphicPoint(int pos)
+{
+    if(m_listRfid.count() <= 0)
+    {
+        qDebug()<<"没有载入RFID，转换失败";
+        return QPoint(0,0);
+    }
+
+    for(int i = 0;i < m_listRfid.count();i++)
+    {
+        RfidGraphicsItem* it = (RfidGraphicsItem*)(m_listRfid.at(i));
+        if(it->getNumber() == pos)
+        {
+            return it->getGraphicsPoint();
+        }
+    }
+    qDebug()<<"找不到需求转换点";
+    return QPoint(0,0);
+}
+
 void PathwayGV::initPathwayRfid(QList<QString> rfidList)
 {
     //移除背景文字
     m_pScene->removeItem(m_pBackgroundTextItem);
 
+    //先将轨道item压入scene，否则会在rfid上层绘制
+    m_pPathwayPath = new QGraphicsPathItem;
+    m_pScene->addItem(m_pPathwayPath);
+
+    //绘制RFID点位
+    QPainterPath pathwayPath;
     for(int i = 0 ; i < rfidList.count() ; i++)
     {
         QStringList lineConfigList = QString(rfidList.at(i)).split(" ");
@@ -61,7 +90,13 @@ void PathwayGV::initPathwayRfid(QList<QString> rfidList)
             int x = QString(lineConfigList.at(0)).toInt();
             int y = QString(lineConfigList.at(1)).toInt();
             int number = QString(lineConfigList.at(2)).toInt();
-            m_pScene->addItem(new RfidGraphicsItem(QPoint(x,y),number));
+            m_listRfid << new RfidGraphicsItem(QPoint(x,y),number);
+            m_pScene->addItem(m_listRfid.last());
+
+            if(i == 0)
+                pathwayPath.moveTo(x,y);
+            else
+                pathwayPath.lineTo(x,y);
         }
         else
         {
@@ -70,10 +105,45 @@ void PathwayGV::initPathwayRfid(QList<QString> rfidList)
         }
     }
 
-    //test
-//    QList<QGraphicsItem*> tempList = m_pScene->items();
-//    qDebug()<<(RfidGraphicsItem*)(tempList.at(2))->getNumber();
-
+    //绘制轨道
+    m_pPathwayPath->setPath(pathwayPath);
+    m_pPathwayPath->setPen(QPen(QBrush(Qt::white),10));
 }
 
+void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
+{
+    //初始化Graphics Carrier
 
+    for(int i = 0;i < carrierList.count() ; i++)
+    {
+        QStringList lineConfigList = QString(carrierList.at(i)).split(" ");
+        if(lineConfigList.count() == 4)
+        {
+            int number = i+1;
+            int pos = QString(lineConfigList.at(1)).toInt();
+            int status = QString(lineConfigList.at(3)).toInt();
+
+            if(m_listRfid.count() <= 0)
+            {
+                QMessageBox::critical(this,tr("Pathway Carrier Error"),tr("尚未载入RFID点位"));
+                return;
+            }
+
+            //点位检查
+            if(((pos/RFID_BASEDEV) < 0) || ((pos/RFID_BASEDEV) > m_listRfid.count()))
+            {
+                QMessageBox::critical(this,tr("Pathway Carrier Error"),tr("Carrier图形位置错误"));
+                return;
+            }
+
+            QPoint tempPoint = transPosnumToGraphicPoint(pos);
+            m_listGraphicCarrier << new CarrierGraphicsItem(tempPoint,status,number);
+            m_pScene->addItem(m_listGraphicCarrier.last());
+        }
+        else
+        {
+            QMessageBox::critical(this,tr("Pathway Carrier Error"),tr("Carrier图形单错误"));
+            return;
+        }
+    }
+}

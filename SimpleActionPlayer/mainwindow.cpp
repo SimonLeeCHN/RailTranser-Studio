@@ -235,6 +235,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
     //初始化载体车
     m_pCarrier = new Carrier(carrierList,this);
     m_pCarrier->BandViewer(ui->TV_Carrier);
+    ui->GV_CarrierPathway->initGraphicCarrier(carrierList);
 
 
     //已加载工程文件

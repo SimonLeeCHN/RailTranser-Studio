@@ -7,14 +7,6 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#define RFIDGI_WIDTH                    40
-#define RFIDGI_HEIGHT                   40
-#define RFIDGI_X                        -20
-#define RFIDGI_Y                        -20
-#define RFIDGI_BACKGROUND_COLOR         QColor(68, 69, 73)
-#define RFIDGI_PEN_COLOR                QColor(255,255,255)
-#define RFIDGI_PEN_SIZE                 20
-
 class RfidGraphicsItem : public QObject,public QGraphicsItem
 {
     Q_OBJECT

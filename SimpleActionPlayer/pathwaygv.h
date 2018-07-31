@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include "rfidgraphicsitem.h"
+#include "carriergraphicsitem.h"
 #include <QUrl>
 
 #define SCENE_BACKGROUND_COLOR  QColor(50,50,50)
@@ -17,10 +18,17 @@ public:
     ~PathwayGV();
 
     void initPathwayRfid(QList<QString> rfidList);
+    void initGraphicCarrier(QList<QString> carrierList);
 
 private:
     QGraphicsScene* m_pScene = NULL;
     QGraphicsSimpleTextItem* m_pBackgroundTextItem = NULL;
+    QGraphicsPathItem* m_pPathwayPath = NULL;
+
+    QList<RfidGraphicsItem*> m_listRfid;
+    QList<CarrierGraphicsItem*> m_listGraphicCarrier;
+
+    QPoint transPosnumToGraphicPoint(int pos);
 
 protected:
     void wheelEvent(QWheelEvent* event);

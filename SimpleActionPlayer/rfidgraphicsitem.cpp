@@ -7,7 +7,7 @@
 #define RFIDGI_Y                        -20
 #define RFIDGI_BACKGROUND_COLOR         QColor(68, 69, 73)
 #define RFIDGI_NUMBER_COLOR                QColor(255,255,255)
-#define RFIDGI_NUMBER_SIZE                 20
+#define RFIDGI_NUMBER_SIZE                 13
 
 RfidGraphicsItem::RfidGraphicsItem()
 {

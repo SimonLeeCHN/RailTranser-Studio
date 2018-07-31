@@ -50,3 +50,8 @@ FORMS += \
 
 RESOURCES += \
     resource.qrc
+
+VERSION = 3.0.1
+QMAKE_TARGET_COMPANY = Genius
+QMAKE_TARGET_DESCRIPTION = PC-software
+QMAKE_TARGET_COPYRIGHT = All rights recive

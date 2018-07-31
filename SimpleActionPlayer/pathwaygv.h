@@ -20,6 +20,9 @@ public:
     void initPathwayRfid(QList<QString> rfidList);
     void initGraphicCarrier(QList<QString> carrierList);
 
+public slots:
+    void onUpdateGraphicCarrier(int number,int status,int pos);
+
 private:
     QGraphicsScene* m_pScene = NULL;
     QGraphicsSimpleTextItem* m_pBackgroundTextItem = NULL;

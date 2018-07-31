@@ -4,7 +4,7 @@
 #define CARRIERGI_WIDTH             20
 #define CARRIERGI_HEIGHT            20
 #define CARRIERGI_X                 10
-#define CARRIERGI_Y                 -10
+#define CARRIERGI_Y                 10
 #define CARRIERGI_PEN_SIZE          10
 
 #define CARRIERGI_COLOR_ERROR       QColor(225,67,75)

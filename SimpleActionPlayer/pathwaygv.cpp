@@ -53,6 +53,7 @@ void PathwayGV::wheelEvent(QWheelEvent *event)
 
 QPoint PathwayGV::transPosnumToGraphicPoint(int pos)
 {
+    //由RFID号找到其RFID的GraphicPoint
     if(m_listRfid.count() <= 0)
     {
         qDebug()<<"没有载入RFID，转换失败";
@@ -146,4 +147,19 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
             return;
         }
     }
+}
+
+/*      SLOT        */
+void PathwayGV::onUpdateGraphicCarrier(int number, int status, int pos)
+{
+    if(pos <= 0)
+        return;
+
+    //由number确定是哪辆GraphicCarrier，直接设置它的status
+    CarrierGraphicsItem* gcItem = m_listGraphicCarrier.at(number-1);
+    gcItem->setStatus(status);
+
+    //由pos找到对应RFID的GraphicPoint，赋值给GraphicCarrier
+    gcItem->setGraphicsPoint(transPosnumToGraphicPoint(pos));
+
 }

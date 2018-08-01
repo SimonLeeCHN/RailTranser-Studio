@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QWheelEvent>
+#include <QTimer>
 
 #define RFID_BASEDEV    100
 
@@ -28,6 +29,11 @@ PathwayGV::PathwayGV(QWidget *parent) :
     m_pBackgroundTextItem->setFont(font);
     m_pBackgroundTextItem->setBrush(QColor(68, 69, 73));
     m_pScene->addItem(m_pBackgroundTextItem);
+
+    //更新时钟
+    m_pUpdateTimer = new QTimer();
+    connect(m_pUpdateTimer,QTimer::timeout,m_pScene,QGraphicsScene::advance);
+    m_pUpdateTimer->start(500);
 
 }
 
@@ -152,9 +158,6 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
 /*      SLOT        */
 void PathwayGV::onUpdateGraphicCarrier(int number, int status, int pos)
 {
-    if(pos <= 0)
-        return;
-
     //由number确定是哪辆GraphicCarrier，直接设置它的status
     CarrierGraphicsItem* gcItem = m_listGraphicCarrier.at(number-1);
     gcItem->setStatus(status);

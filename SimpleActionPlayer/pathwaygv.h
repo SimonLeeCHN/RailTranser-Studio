@@ -33,6 +33,8 @@ private:
 
     QPoint transPosnumToGraphicPoint(int pos);
 
+    QTimer* m_pUpdateTimer;
+
 protected:
     void wheelEvent(QWheelEvent* event);
 };

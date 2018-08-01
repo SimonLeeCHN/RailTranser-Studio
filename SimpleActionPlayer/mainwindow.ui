@@ -136,12 +136,12 @@ QMenu::item:enabled:selected {
         background: rgba(255, 255, 255, 40);
 }
 QMenu::separator {
-        height: 1px;
+        height: 2px;
         background: rgb(100, 100, 100);
 }
 QMenu::indicator {
-        width: 13px;
-        height: 13px;
+        width: 18px;
+        height: 18px;
 }
 QMenu::icon {
         padding-left: 2px;
@@ -1394,7 +1394,6 @@ Stop
     </property>
     <addaction name="AC_file_addExistProjectFile"/>
     <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="AC_file_addExistActionScriptFile"/>
    </widget>
    <addaction name="MENU_file"/>
@@ -1403,10 +1402,22 @@ Stop
    <property name="text">
     <string>添加现有动作脚本</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Algerian</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
   </action>
   <action name="AC_file_addExistProjectFile">
    <property name="text">
     <string>添加现有工程文件</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Algerian</family>
+     <pointsize>12</pointsize>
+    </font>
    </property>
   </action>
  </widget>

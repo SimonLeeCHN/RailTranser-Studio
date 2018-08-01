@@ -20,6 +20,9 @@ public:
     void setNumber(int number);
     void setStatus(int status);
 
+protected:
+    void advance(int step) override;
+
 private:
     int m_iNumber;              //自身编号
     int m_iStatus;              //自身状态编码

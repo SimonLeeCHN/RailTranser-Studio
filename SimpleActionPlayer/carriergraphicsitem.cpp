@@ -1,5 +1,6 @@
 #include "carriergraphicsitem.h"
 #include <QPainter>
+#include <QDebug>
 
 #define CARRIERGI_WIDTH             20
 #define CARRIERGI_HEIGHT            20
@@ -25,6 +26,8 @@ CarrierGraphicsItem::CarrierGraphicsItem()
     m_qpGraphicsPoint = QPoint(0,0);
     m_iStatus = 2;
     m_iNumber = 1;
+
+    this->setPos(m_qpGraphicsPoint);
 }
 
 CarrierGraphicsItem::CarrierGraphicsItem(QPoint point, int status, int number)
@@ -32,6 +35,8 @@ CarrierGraphicsItem::CarrierGraphicsItem(QPoint point, int status, int number)
     m_qpGraphicsPoint = point;
     m_iStatus = status;
     m_iNumber = number;
+
+    this->setPos(m_qpGraphicsPoint);
 }
 
 void CarrierGraphicsItem::setGraphicsPoint(QPoint point)
@@ -72,7 +77,11 @@ void CarrierGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
 {
     //draw Graphics Carrier
 
-    this->setPos(m_qpGraphicsPoint);
+//    if(m_qpGraphicsPoint == QPoint(0,0))
+//    {
+//        //    (m_qpGraphicsPoint.x() == 0) && (m_qpGraphicsPoint.y() == 0)
+//        return;
+//    }
 
     //外形
     switch (m_iStatus)
@@ -110,5 +119,12 @@ void CarrierGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
 }
 
+void CarrierGraphicsItem::advance(int step)
+{
+    if(!step)
+        return;
 
+    this->setPos(m_qpGraphicsPoint);
+    qDebug()<<"GraphicCarrier advance";
+}
 

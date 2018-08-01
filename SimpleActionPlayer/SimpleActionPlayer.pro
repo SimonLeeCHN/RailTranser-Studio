@@ -51,6 +51,8 @@ FORMS += \
 RESOURCES += \
     resource.qrc
 
+RC_FILE = rc.rc
+
 VERSION = 3.0.1
 QMAKE_TARGET_COMPANY = Genius
 QMAKE_TARGET_DESCRIPTION = PC-software

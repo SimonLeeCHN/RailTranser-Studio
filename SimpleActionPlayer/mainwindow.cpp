@@ -17,8 +17,11 @@
 
 #include "stationport.h"
 
-#define PROJECTFILE_TEXT_RFID       "RFID_POS\n"
-#define PROJECTFILE_TEXT_CARRIER    "CARRIER_PRF\n"
+#define PROJECTFILE_TEXT_RFID           "RFID_POS\n"
+#define PROJECTFILE_TEXT_CARRIER        "CARRIER_PRF\n"
+
+#define PROJECTFILE_SUFFIX              "apd"
+#define CARRIERAUTOSCRIPTFILE_SUFFIX    "casf"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,8 +49,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
-    //要求为ACS文件才接收拖动
-    if(!event->mimeData()->urls()[0].fileName().right(4).compare("casf"))
+    //要求为自动脚本文件才接收拖动
+    if(!event->mimeData()->urls()[0].fileName().right(4).compare(CARRIERAUTOSCRIPTFILE_SUFFIX))
     {
         event->acceptProposedAction();//接受动作
         //若不添加此函数，则外部文件无法添加到窗体中
@@ -74,6 +77,12 @@ void MainWindow::addActionScriptFile(QList<QUrl> fileList)
 {
     for(int index = 0;index < fileList.count();index++)
     {
+        if(fileList.at(index).fileName().right(4).compare(CARRIERAUTOSCRIPTFILE_SUFFIX))
+        {
+            //不为对应文件
+            QMessageBox::critical(this,tr("Cannot Open file"),tr("非自动脚本文件"));
+            return;
+        }
 
         QString fileName = fileList.at(index).fileName();
         QString filePath = fileList.at(index).toLocalFile();
@@ -136,6 +145,14 @@ void MainWindow::fillAvaliablePorts()
 void MainWindow::loadProjectFile(QUrl fileUrl)
 {
     //从文件读取工程配置：RFID点，载体车
+
+    if(fileUrl.fileName().right(3).compare(PROJECTFILE_SUFFIX))
+    {
+        //不为对应文件
+        QMessageBox::critical(this,tr("Cannot Open file"),tr("非工程文件"));
+        return;
+    }
+
 
     //避免重复加载
     if(m_bIsProjectFillLoaded)

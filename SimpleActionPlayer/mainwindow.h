@@ -26,6 +26,7 @@ public slots:
     void printMessage(QString str);
     void OnAddExistActionScriptFile();
     void OnAddExistProjectFile();
+    void OnRegesitFileRelation();
 
 private slots:   
     void on_BTN_Refresh_clicked(bool checked);

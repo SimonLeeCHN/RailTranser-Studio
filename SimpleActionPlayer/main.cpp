@@ -1,11 +1,11 @@
-#include "qtsingleapplication.h"
+#include "qtsingleapplication/src/QtSingleApplication"
 #include "mainwindow.h"
 #include <QApplication>
 #include <QMessageBox>
 
 int main(int argc, char *argv[])
 {
-    //QApplication a(argc, argv);
+//    QApplication a(argc, argv);
     QtSingleApplication a(argc,argv);
     if(a.isRunning())
     {

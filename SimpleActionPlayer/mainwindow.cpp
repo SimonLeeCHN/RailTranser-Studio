@@ -127,6 +127,7 @@ void MainWindow::initMenu()
 {
     connect(ui->AC_file_addExistActionScriptFile,&QAction::triggered,this,&MainWindow::OnAddExistActionScriptFile);
     connect(ui->AC_file_addExistProjectFile,&QAction::triggered,this,&MainWindow::OnAddExistProjectFile);
+    connect(ui->AC_help_RegesitFileRelation,&QAction::triggered,this,&MainWindow::OnRegesitFileRelation);
 }
 
 void MainWindow::fillAvaliablePorts()
@@ -328,6 +329,21 @@ void MainWindow::OnAddExistProjectFile()
     QUrl fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
     if(!fileUrl.isEmpty())
         this->loadProjectFile(fileUrl);
+}
+
+void MainWindow::OnRegesitFileRelation()
+{
+    QMessageBox::information(this,tr("Information"),tr("注册文件关联可能需要管理员权限运行！"));
+
+    QString strApplicationFilePath = qApp->applicationFilePath();
+    strApplicationFilePath.replace("/","\\");
+    QString strApdIconPath = strApplicationFilePath + QString(",1");
+    QString strCasfIconPath = strApplicationFilePath + QString(",2");
+
+    char* charAppFilePath = QByteArray(strApplicationFilePath.toLatin1()).data();
+    char* charApdPath = QByteArray(strApdIconPath.toLatin1()).data();
+    char* charCasfPath = QByteArray(strCasfIconPath.toLatin1()).data();
+
 }
 
 void MainWindow::printMessage(QString str)

@@ -4,7 +4,6 @@
 #include <QTime>
 #include <QTimer>
 #include <QString>
-#include <QtSingleApplication>
 #include <QFileInfo>
 
 #define CMD_STA 1

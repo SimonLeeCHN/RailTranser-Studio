@@ -1396,7 +1396,14 @@ Stop
     <addaction name="separator"/>
     <addaction name="AC_file_addExistActionScriptFile"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="AC_help_RegesitFileRelation"/>
+   </widget>
    <addaction name="MENU_file"/>
+   <addaction name="menu"/>
   </widget>
   <action name="AC_file_addExistActionScriptFile">
    <property name="text">
@@ -1412,6 +1419,17 @@ Stop
   <action name="AC_file_addExistProjectFile">
    <property name="text">
     <string>添加现有工程文件</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Algerian</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="AC_help_RegesitFileRelation">
+   <property name="text">
+    <string>注册文件关联</string>
    </property>
    <property name="font">
     <font>

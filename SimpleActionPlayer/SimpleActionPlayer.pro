@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-include (qtsingleapplication/src/qtsingleapplication.pri)
+include (./qtsingleapplication/src/qtsingleapplication.pri)
 
 SOURCES += \
         main.cpp \
@@ -33,7 +33,8 @@ SOURCES += \
     Carrier.cpp \
     pathwaygv.cpp \
     rfidgraphicsitem.cpp \
-    carriergraphicsitem.cpp
+    carriergraphicsitem.cpp \
+    plantformapply.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,7 +44,8 @@ HEADERS += \
     Carrier.h \
     pathwaygv.h \
     rfidgraphicsitem.h \
-    carriergraphicsitem.h
+    carriergraphicsitem.h \
+    plantformapply.h
 
 FORMS += \
         mainwindow.ui

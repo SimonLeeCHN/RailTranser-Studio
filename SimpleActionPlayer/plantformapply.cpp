@@ -17,28 +17,28 @@ void RegisterFileRelation(char *strExt,char *strAppKey,char *strAppName, char *s
     char strTemp[_MAX_PATH];
     HKEY hKey;
 
-//    RegCreateKey(HKEY_CLASSES_ROOT,strExt,&hKey);
-//    RegSetValue(hKey,"",REG_SZ,strAppKey,strlen(strAppKey)+1);
-//    RegCloseKey(hKey);
+    RegCreateKey(HKEY_CLASSES_ROOT,strExt,&hKey);
+    RegSetValue(hKey,"",REG_SZ,strAppKey,strlen(strAppKey)+1);
+    RegCloseKey(hKey);
 
-//    RegCreateKey(HKEY_CLASSES_ROOT,strAppKey,&hKey);
-//    RegSetValue(hKey,"",REG_SZ,strDescribe,strlen(strDescribe)+1);
-//    RegCloseKey(hKey);
+    RegCreateKey(HKEY_CLASSES_ROOT,strAppKey,&hKey);
+    RegSetValue(hKey,"",REG_SZ,strDescribe,strlen(strDescribe)+1);
+    RegCloseKey(hKey);
 
-//    sprintf(strTemp,"%s\\DefaultIcon",strAppKey);
-//    RegCreateKey(HKEY_CLASSES_ROOT,strTemp,&hKey);
-//    RegSetValue(hKey,"",REG_SZ,strDefaultIcon,strlen(strDefaultIcon)+1);
-//    RegCloseKey(hKey);
+    sprintf(strTemp,"%s\\DefaultIcon",strAppKey);
+    RegCreateKey(HKEY_CLASSES_ROOT,strTemp,&hKey);
+    RegSetValue(hKey,"",REG_SZ,strDefaultIcon,strlen(strDefaultIcon)+1);
+    RegCloseKey(hKey);
 
-//    sprintf(strTemp,"%s\\Shell",strAppKey);
-//    RegCreateKey(HKEY_CLASSES_ROOT,strTemp,&hKey);
-//    RegSetValue(hKey,"",REG_SZ,"Open",strlen("Open")+1);
-//    RegCloseKey(hKey);
+    sprintf(strTemp,"%s\\Shell",strAppKey);
+    RegCreateKey(HKEY_CLASSES_ROOT,strTemp,&hKey);
+    RegSetValue(hKey,"",REG_SZ,"Open",strlen("Open")+1);
+    RegCloseKey(hKey);
 
-//    sprintf(strTemp,"%s\\Shell\\Open\\Command",strAppKey);
-//    RegCreateKey(HKEY_CLASSES_ROOT,strTemp,&hKey);
-//    sprintf(strTemp,"%s \"%%1\"",strAppName);
-//    RegSetValue(hKey,"",REG_SZ,strTemp,strlen(strTemp)+1);
-//    RegCloseKey(hKey);
-//    SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_IDLIST,NULL,NULL);
+    sprintf(strTemp,"%s\\Shell\\Open\\Command",strAppKey);
+    RegCreateKey(HKEY_CLASSES_ROOT,strTemp,&hKey);
+    sprintf(strTemp,"%s \"%%1\"",strAppName);
+    RegSetValue(hKey,"",REG_SZ,strTemp,strlen(strTemp)+1);
+    RegCloseKey(hKey);
+    SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_IDLIST,NULL,NULL);
 }

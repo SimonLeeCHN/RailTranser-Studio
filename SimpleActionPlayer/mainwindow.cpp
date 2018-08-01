@@ -16,6 +16,7 @@
 #include <QFileDialog>
 
 #include "stationport.h"
+#include "plantformapply.h"
 
 #define PROJECTFILE_TEXT_RFID           "RFID_POS\n"
 #define PROJECTFILE_TEXT_CARRIER        "CARRIER_PRF\n"
@@ -340,9 +341,30 @@ void MainWindow::OnRegesitFileRelation()
     QString strApdIconPath = strApplicationFilePath + QString(",1");
     QString strCasfIconPath = strApplicationFilePath + QString(",2");
 
-    char* charAppFilePath = QByteArray(strApplicationFilePath.toLatin1()).data();
-    char* charApdPath = QByteArray(strApdIconPath.toLatin1()).data();
-    char* charCasfPath = QByteArray(strCasfIconPath.toLatin1()).data();
+    QByteArray ba = strApplicationFilePath.toLocal8Bit();
+    char* charAppFilePath = new char[ba.length()];
+    strcpy(charAppFilePath,ba.data());
+
+    ba = strApdIconPath.toLocal8Bit();
+    char* charApdPath = new char[ba.length()];
+    strcpy(charApdPath,ba.data());
+
+    ba = strCasfIconPath.toLocal8Bit();
+    char* charCasfPath = new char[ba.length()];
+    strcpy(charCasfPath,ba.data());
+
+
+    RegisterFileRelation(".apd",
+                         "ActionPlayerData.Image.1",
+                            charAppFilePath,
+                            charApdPath,
+                            "ActionPlayer Project Data");
+
+    RegisterFileRelation(".casf",
+                         "CarrierAutoScriptFile.Image.2",
+                            "",
+                            charCasfPath,
+                            "Carrier Auto Script File");
 
 }
 

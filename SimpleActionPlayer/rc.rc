@@ -1,0 +1,3 @@
+IDI_ICON1              ICON         "资源文件\\ico\\main.ico"
+IDI_ICON2               ICON    "资源文件\\ico\\apd.ico"
+IDI_ICON3               ICON    "资源文件\\ico\\casf.ico"

@@ -47,7 +47,7 @@
 #define MAX_READERS MAXIMUM_WAIT_OBJECTS
 
 #if QT_VERSION >= 0x050000
-#define QT_WA(unicode, ansi) unicode
+#define QT_WA(unicode, ansi) ansi
 #endif
 
 Qt::HANDLE QtLockedFile::getMutexHandle(int idx, bool doCreate)

@@ -1,4 +1,4 @@
-#include "qtsingleapplication/src/QtSingleApplication"
+#include <qtsingleapplication.h>
 #include "mainwindow.h"
 #include <QApplication>
 #include <QMessageBox>

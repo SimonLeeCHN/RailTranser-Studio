@@ -354,17 +354,17 @@ void MainWindow::OnRegesitFileRelation()
     strcpy(charCasfPath,ba.data());
 
 
-    RegisterFileRelation(".apd",
-                         "ActionPlayerData.Image.1",
+    RegisterFileRelation((char*)".apd",
+                         (char*)"ActionPlayerData.Image.1",
                             charAppFilePath,
                             charApdPath,
-                            "ActionPlayer Project Data");
+                            (char*)"ActionPlayer Project Data");
 
-    RegisterFileRelation(".casf",
-                         "CarrierAutoScriptFile.Image.2",
-                            "",
+    RegisterFileRelation((char*)".casf",
+                         (char*)"CarrierAutoScriptFile.Image.2",
+                            (char*)"",
                             charCasfPath,
-                            "Carrier Auto Script File");
+                            (char*)"Carrier Auto Script File");
 
 }
 

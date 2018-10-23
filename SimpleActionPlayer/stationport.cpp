@@ -1,5 +1,8 @@
 #include "StationPort.h"
 #include <QtSerialPort/QSerialPortInfo>
+#include <QCoreApplication>
+#include <QTime>
+#include <QTimer>
 #include "QMessageBox"
 #include "mainwindow.h"
 
@@ -268,11 +271,14 @@ void StationPort::OnStationPortDataCome()
 
 void StationPort::SendPackageData(QList<QByteArray> list,int port)
 {
-    //TODO:发送数据包   根据端口进行打包然后发送
+    //TODO:发送数据包   根据端口进行打包然后发送   循环3次
 
     packetPackage(list,port);
-    for(int i = 0; i < list.count();i++)
+    for(int loopCnt = 0;loopCnt < 3;loopCnt++)
     {
-        this->write(list[i]);
+        for(int i = 0; i < list.count();i++)
+        {
+            this->write(list[i]);
+        }
     }
 }

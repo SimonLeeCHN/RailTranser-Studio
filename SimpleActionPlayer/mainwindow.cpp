@@ -44,6 +44,12 @@ MainWindow::~MainWindow()
     if(m_pStationPort->isOpen())
         m_pStationPort->stopConnect();
 
+    if(m_pCasfCreatorProcess)
+    {
+        m_pCasfCreatorProcess->close();
+        delete m_pCasfCreatorProcess;
+    }
+
     delete m_pStationPort;
     delete ui;
 }
@@ -110,7 +116,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("SimpleActionPlayer"));
+    setWindowTitle(tr("CASF-ActionPlayer"));
 
     //控件初始化
     ui->BTN_Stop->setEnabled(false);
@@ -129,6 +135,7 @@ void MainWindow::initMenu()
     connect(ui->AC_file_addExistActionScriptFile,&QAction::triggered,this,&MainWindow::OnAddExistActionScriptFile);
     connect(ui->AC_file_addExistProjectFile,&QAction::triggered,this,&MainWindow::OnAddExistProjectFile);
     connect(ui->AC_help_RegesitFileRelation,&QAction::triggered,this,&MainWindow::OnRegesitFileRelation);
+    connect(ui->AC_arose_casfCreator,&QAction::triggered,this,&MainWindow::OnAroseCasfCreator);
 }
 
 void MainWindow::fillAvaliablePorts()
@@ -274,7 +281,7 @@ void MainWindow::componentInit()
     connect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
 
     //载体车
-    m_pCarrier->OnStartHeartbeatTimer();
+    //m_pCarrier->OnStartHeartbeatTimer();              //载体车为主动回馈，先关闭心跳包查询定时器，避免串口冲突
 
     connect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
     connect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
@@ -330,6 +337,47 @@ void MainWindow::OnAddExistProjectFile()
     QUrl fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
     if(!fileUrl.isEmpty())
         this->loadProjectFile(fileUrl);
+}
+
+void MainWindow::OnAroseCasfCreator()
+{
+    //创建process，唤起CASF-Creator
+    m_pCasfCreatorProcess = new QProcess();
+
+    //错误处理
+    connect(m_pCasfCreatorProcess,&QProcess::errorOccurred,this,&MainWindow::OnAroseCasfCreatorError);
+
+    m_pCasfCreatorProcess->start(CASFCREATOR_PATH);
+
+}
+
+void MainWindow::OnAroseCasfCreatorError(QProcess::ProcessError error)
+{
+    //唤起CASF-Creator错误处理
+    switch(error)
+     {
+      case QProcess::FailedToStart:
+        QMessageBox::information(0,"FailedToStart","FailedToStart");
+        break;
+      case QProcess::Crashed:
+        QMessageBox::information(0,"Crashed","Crashed");
+        break;
+      case QProcess::Timedout:
+        QMessageBox::information(0,"FailedToStart","FailedToStart");
+        break;
+      case QProcess::WriteError:
+        QMessageBox::information(0,"Timedout","Timedout");
+        break;
+      case QProcess::ReadError:
+        QMessageBox::information(0,"ReadError","ReadError");
+        break;
+      case QProcess::UnknownError:
+        QMessageBox::information(0,"UnknownError","UnknownError");
+        break;
+      default:
+        QMessageBox::information(0,"default","default");
+        break;
+     }
 }
 
 void MainWindow::OnRegesitFileRelation()

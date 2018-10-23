@@ -1,9 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define CASFCREATOR_PATH "..\CASF-Creator\CASF-Creator.exe"
+
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include <QUrl>
+#include <QProcess>
 #include "stationport.h"
 #include "actionplayer.h"
 #include "Carrier.h"
@@ -26,6 +29,8 @@ public slots:
     void printMessage(QString str);
     void OnAddExistActionScriptFile();
     void OnAddExistProjectFile();
+    void OnAroseCasfCreator();
+    void OnAroseCasfCreatorError(QProcess::ProcessError error);
     void OnRegesitFileRelation();
 
 private slots:   
@@ -49,10 +54,13 @@ private:
     Ui::MainWindow *ui;
     bool m_bIsProjectFillLoaded = false;
     StationPort *m_pStationPort = NULL;
+
     int m_iCarrierNum = 1;
     Carrier *m_pCarrier;
     ActionPlayer *m_pActionPlayer = NULL;
     RealActionActuator *m_pRealActionActuator = NULL;
+
+    QProcess *m_pCasfCreatorProcess = NULL;
 
     void addActionScriptFile(QList<QUrl> fileList);
     void initWindowStyle();

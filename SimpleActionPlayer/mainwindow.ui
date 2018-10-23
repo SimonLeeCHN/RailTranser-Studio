@@ -1395,6 +1395,8 @@ Stop
     <addaction name="AC_file_addExistProjectFile"/>
     <addaction name="separator"/>
     <addaction name="AC_file_addExistActionScriptFile"/>
+    <addaction name="separator"/>
+    <addaction name="AC_arose_casfCreator"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -1411,7 +1413,7 @@ Stop
    </property>
    <property name="font">
     <font>
-     <family>Algerian</family>
+     <family>Arial</family>
      <pointsize>12</pointsize>
     </font>
    </property>
@@ -1422,7 +1424,7 @@ Stop
    </property>
    <property name="font">
     <font>
-     <family>Algerian</family>
+     <family>Arial</family>
      <pointsize>12</pointsize>
     </font>
    </property>
@@ -1434,6 +1436,17 @@ Stop
    <property name="font">
     <font>
      <family>Algerian</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="AC_arose_casfCreator">
+   <property name="text">
+    <string>打开CASF-Creator</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
      <pointsize>12</pointsize>
     </font>
    </property>

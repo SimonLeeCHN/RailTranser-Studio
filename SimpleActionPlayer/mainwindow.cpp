@@ -44,7 +44,7 @@ MainWindow::~MainWindow()
     if(m_pStationPort->isOpen())
         m_pStationPort->stopConnect();
 
-    if(m_pCasfCreatorProcess)
+    if(m_pCasfCreatorProcess->state() != QProcess::NotRunning)
     {
         m_pCasfCreatorProcess->close();
         delete m_pCasfCreatorProcess;

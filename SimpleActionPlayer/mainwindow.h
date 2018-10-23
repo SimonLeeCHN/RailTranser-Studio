@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define CASFCREATOR_PATH "..\CASF-Creator\CASF-Creator.exe"
+#define CASFCREATOR_PATH "../CASF-Creator/CASF-Creator.exe"
 
 #include <QMainWindow>
 #include <QListWidgetItem>

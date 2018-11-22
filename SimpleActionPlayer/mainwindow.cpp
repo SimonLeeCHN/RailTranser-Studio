@@ -281,7 +281,7 @@ void MainWindow::componentInit()
     connect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
 
     //载体车
-    //m_pCarrier->OnStartHeartbeatTimer();              //载体车为主动回馈，先关闭心跳包查询定时器，避免串口冲突
+    m_pCarrier->OnStartHeartbeatTimer();
 
     connect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
     connect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
@@ -560,6 +560,7 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
 
             tempList<<tempArray;
         }
+
         m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
         m_pActionPlayer->stopActionPlayer();
     }

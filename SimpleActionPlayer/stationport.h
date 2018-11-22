@@ -3,7 +3,8 @@
 
 #include <QtSerialPort/QSerialPort>
 
-#define SHOW_SERIALDATA  1   //是否允许在显示串口数据
+#define SHOW_SERIALRECV  0   //允许显示串口接收数据
+#define SHOW_SERIALSEND  1   //允许显示串口发送数据
 
 #define PORT_HEARTBEAT_SEND     0x80
 #define PORT_HEARTBEAT_BACK     0x81

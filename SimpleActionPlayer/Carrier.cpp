@@ -258,7 +258,7 @@ void Carrier::OnHeartbeatTimeup()
         m_HeartbeatRecordList[i] = false;
     }
 
-    emit RequestSendPackageData(tempList,PORT_HEARTBEAT_SEND);
+//    emit RequestSendPackageData(tempList,PORT_HEARTBEAT_SEND);  //载体车为主动回馈，先关闭心跳包查询定时器，避免串口冲突
 
 }
 
@@ -349,16 +349,14 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
             isPlayerWaittingTrigger = false;
             isLeastOneCarRunning = false;
 
-            //test
-            emit RequestPrintDebugMessage("triger from carrier");
+            emit RequestPrintDebugMessage("TRIG: triger from carrier");
 
             emit RequestAfterAllCarStandby();
         }
         else
         {
-            //test
             if(isLeastOneCarRunning == false)
-                emit RequestPrintDebugMessage("not at least one car running");
+                emit RequestPrintDebugMessage("TRIG: not at least one car running");
         }
     }
 

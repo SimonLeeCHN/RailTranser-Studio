@@ -257,7 +257,7 @@ void StationPort::OnStationPortDataCome()
     //将本次读来的数据加入缓冲区，以防一次读不全包
     m_RawData.append(tempData);
 
-#if SHOW_SERIALDATA
+#if SHOW_SERIALRECV
     QString tempStr = tempData.toHex();
     tempStr.prepend("REC: ");
     emit RequestPrintMessage(tempStr);
@@ -278,6 +278,13 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
     {
         for(int i = 0; i < list.count();i++)
         {
+
+#if SHOW_SERIALSEND
+            QString tempstr = list[i].toHex();
+            tempstr.prepend("SEND: ");
+            emit RequestPrintMessage(tempstr);
+#endif
+
             this->write(list[i]);
         }
     }

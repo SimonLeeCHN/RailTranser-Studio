@@ -12,3 +12,6 @@
 
 **V3.0.5**
 添加了唤起外部CASF-Creator的功能
+
+**V3.0.6**
+调试优化，在更新GraphicCarrier位置后强制调用scene的advance（未测试，看能否消除列表已刷新而轨道图上未刷新的情况）

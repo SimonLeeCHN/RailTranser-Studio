@@ -2,8 +2,9 @@
 #define STATIONSERIAL_H
 
 #include <QtSerialPort/QSerialPort>
+#include <QThread>
 
-#define SHOW_SERIALRECV  0   //允许显示串口接收数据
+#define SHOW_SERIALRECV  1   //允许显示串口接收数据
 #define SHOW_SERIALSEND  1   //允许显示串口发送数据
 
 #define PORT_HEARTBEAT_SEND     0x80
@@ -14,6 +15,7 @@
 #define PORT_GOALMOVE_SEND      0xA0
 #define PORT_CONTROL_SEND       0xB0
 
+class DataSendWorker;
 
 class StationPort : public QSerialPort
 {
@@ -39,6 +41,8 @@ private:
         QSerialPort::FlowControl flowcontrol;
     }portSettings;
 
+    QThread m_tDataSendThread;
+
     void packetPackage(QList<QByteArray> &list,int port);
     void SplitPortdataPackage();
     void IdentifyListCommand();
@@ -52,9 +56,28 @@ public slots:
 signals:
     void RequestPrintMessage(QString text);
 
+    void RequestThreadSendData(QList<QByteArray> list);
+
     void RequestSetCarrierStatus(int carNum,int stu,int pos);
     void RequestSetCarrierProfile(QByteArray config);
 
 };
+
+#define PORT_DATASEND_DEY   50
+
+class DataSendWorker : public QObject
+{
+    Q_OBJECT
+
+public:
+    DataSendWorker(StationPort* parent)
+    {m_pParentStationPort = parent;}
+
+    StationPort* m_pParentStationPort;
+
+public slots:
+    void PackAndSendData(QList<QByteArray> list);
+};
+
 
 #endif // STATIONSERIAL_H

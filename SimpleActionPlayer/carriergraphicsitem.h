@@ -6,6 +6,8 @@
 class CarrierGraphicsItem : public QObject,public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+
 public:
     CarrierGraphicsItem();
     CarrierGraphicsItem(QPoint point,int status,int number);

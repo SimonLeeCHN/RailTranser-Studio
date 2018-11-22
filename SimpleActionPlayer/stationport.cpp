@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QTime>
 #include <QTimer>
+#include <QThread>
 #include "QMessageBox"
 #include "mainwindow.h"
 
@@ -114,10 +115,20 @@ StationPort::StationPort()
 
     connect(this , &StationPort::readyRead , this , &StationPort::OnStationPortDataCome);
 
+    //线程初始化
+    DataSendWorker* pDataSendWorker = new DataSendWorker(this);
+    pDataSendWorker->moveToThread(&m_tDataSendThread);
+    connect(&m_tDataSendThread,&QThread::finished,pDataSendWorker,&QObject::deleteLater);
+    connect(this,&StationPort::RequestThreadSendData,pDataSendWorker,&DataSendWorker::PackAndSendData);
+    m_tDataSendThread.start();
+
 }
 
 StationPort::~StationPort()
 {
+    m_tDataSendThread.quit();
+    m_tDataSendThread.wait();
+
     disconnect(this,&StationPort::readyRead , this , &StationPort::OnStationPortDataCome);
 }
 
@@ -272,20 +283,52 @@ void StationPort::OnStationPortDataCome()
 void StationPort::SendPackageData(QList<QByteArray> list,int port)
 {
     //TODO:发送数据包   根据端口进行打包然后发送   循环3次
+//    packetPackage(list,port);
+//    for(int loopCnt = 0;loopCnt < 3;loopCnt++)
+//    {
+//        for(int i = 0; i < list.count();i++)
+//        {
 
+//#if SHOW_SERIALSEND
+//            QString tempstr = list[i].toHex();
+//            tempstr.prepend("SEND: ");
+//            emit RequestPrintMessage(tempstr);
+//#endif
+
+//            this->write(list[i]);
+//        }
+//    }
+
+    //交给发送线程进行打包和发送
     packetPackage(list,port);
+    emit RequestThreadSendData(list);
+
+}
+
+
+///////////////////////////////////////////////////////////////////
+void DataSendWorker::PackAndSendData(QList<QByteArray> list)
+{
+    //线程内将原始数据进行打包
+//    this->PackRawData(list,port);
+
+    //循环发送
     for(int loopCnt = 0;loopCnt < 3;loopCnt++)
     {
         for(int i = 0; i < list.count();i++)
         {
-
-#if SHOW_SERIALSEND
-            QString tempstr = list[i].toHex();
-            tempstr.prepend("SEND: ");
-            emit RequestPrintMessage(tempstr);
-#endif
-
-            this->write(list[i]);
+            m_pParentStationPort->write(list[i]);
         }
+
+        //延迟
+        QTime _Timer=QTime::currentTime();
+        QTime _NowTimer;
+        do{
+            _NowTimer=QTime::currentTime();
+        }while(_Timer.msecsTo(_NowTimer) <= PORT_DATASEND_DEY);
     }
+
+
 }
+
+

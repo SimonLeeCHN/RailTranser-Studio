@@ -1,6 +1,7 @@
 #ifndef ACTIONACTUATOR_H
 #define ACTIONACTUATOR_H
 
+#include <qtsingleapplication>
 #include <QList>
 #include <QString>
 

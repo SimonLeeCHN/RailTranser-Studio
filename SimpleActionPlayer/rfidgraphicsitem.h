@@ -10,6 +10,8 @@
 class RfidGraphicsItem : public QObject,public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+
 public:
     RfidGraphicsItem();
     RfidGraphicsItem(QPoint point,int number);

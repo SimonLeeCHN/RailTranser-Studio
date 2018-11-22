@@ -116,7 +116,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("CASF-ActionPlayer"));
+    setWindowTitle(tr("CASF-ActionPlayer V3.0.6"));
 
     //控件初始化
     ui->BTN_Stop->setEnabled(false);

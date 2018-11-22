@@ -283,17 +283,17 @@ void MainWindow::componentInit()
     //载体车
     m_pCarrier->OnStartHeartbeatTimer();
 
-    connect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
-    connect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
-    connect(m_pCarrier,Carrier::RequestAfterAllCarStandby,m_pActionPlayer,ActionPlayer::doNextStep);
+    connect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
+    connect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
+    connect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
 
-    connect(m_pActionPlayer,ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,Carrier::OnActionplayerwaittingTrigger);
-    connect(m_pRealActionActuator,RealActionActuator::RequestStartHeartbeatTimer,m_pCarrier,Carrier::OnStartHeartbeatTimer);
-    connect(m_pRealActionActuator,RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,Carrier::OnStopHearbeatTimer);
+    connect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
+    connect(m_pRealActionActuator,&RealActionActuator::RequestStartHeartbeatTimer,m_pCarrier,&Carrier::OnStartHeartbeatTimer);
+    connect(m_pRealActionActuator,&RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,&Carrier::OnStopHearbeatTimer);
 
-    connect(m_pStationPort,StationPort::RequestSetCarrierStatus,m_pCarrier,Carrier::OnSetCarrierStatus);
-    connect(m_pStationPort,StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,PathwayGV::onUpdateGraphicCarrier);
-    connect(m_pStationPort,StationPort::RequestSetCarrierProfile,m_pCarrier,Carrier::OnSetCarrierProfile);
+    connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
+    connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
+    connect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
 
 }
 
@@ -310,17 +310,17 @@ void MainWindow::componentDeinit()
     //载体车
     m_pCarrier->OnStopHearbeatTimer();
 
-    disconnect(m_pCarrier,Carrier::RequestPrintDebugMessage,this,MainWindow::printMessage);
-    disconnect(m_pCarrier,Carrier::RequestSendPackageData,m_pStationPort,StationPort::SendPackageData);
-    disconnect(m_pCarrier,Carrier::RequestAfterAllCarStandby,m_pActionPlayer,ActionPlayer::doNextStep);
+    disconnect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
+    disconnect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
+    disconnect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
 
-    disconnect(m_pActionPlayer,ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,Carrier::OnActionplayerwaittingTrigger);
-    disconnect(m_pRealActionActuator,RealActionActuator::RequestStartHeartbeatTimer,m_pCarrier,Carrier::OnStartHeartbeatTimer);
-    disconnect(m_pRealActionActuator,RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,Carrier::OnStopHearbeatTimer);
+    disconnect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
+    disconnect(m_pRealActionActuator,&RealActionActuator::RequestStartHeartbeatTimer,m_pCarrier,&Carrier::OnStartHeartbeatTimer);
+    disconnect(m_pRealActionActuator,&RealActionActuator::RequestStopHeartbeatTimer,m_pCarrier,&Carrier::OnStopHearbeatTimer);
 
-    disconnect(m_pStationPort,StationPort::RequestSetCarrierStatus,m_pCarrier,Carrier::OnSetCarrierStatus);
-    disconnect(m_pStationPort,StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,PathwayGV::onUpdateGraphicCarrier);
-    disconnect(m_pStationPort,StationPort::RequestSetCarrierProfile,m_pCarrier,Carrier::OnSetCarrierProfile);
+    disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
+    disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
+    disconnect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
 }
 
 /*      SLOT     */

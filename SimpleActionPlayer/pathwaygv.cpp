@@ -32,7 +32,7 @@ PathwayGV::PathwayGV(QWidget *parent) :
 
     //更新时钟
     m_pUpdateTimer = new QTimer();
-    connect(m_pUpdateTimer,QTimer::timeout,m_pScene,QGraphicsScene::advance);
+    connect(m_pUpdateTimer,&QTimer::timeout,m_pScene,&QGraphicsScene::advance);
     m_pUpdateTimer->start(500);
 
 }

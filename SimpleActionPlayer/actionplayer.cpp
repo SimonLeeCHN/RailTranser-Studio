@@ -176,7 +176,7 @@ void ActionPlayer::doNextStep()
             emit RequestPrintMessage(strMessage);
 
             //TODO:使得延迟一段时间
-            QTimer::singleShot((tStrList[1]).toInt() * 1000,this,doNextStep);
+            QTimer::singleShot((tStrList[1]).toInt() * 1000,this,&ActionPlayer::doNextStep);
 
             break;
         }

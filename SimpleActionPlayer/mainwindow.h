@@ -46,6 +46,8 @@ private slots:
 
     void on_BTN_ReLocate_clicked(bool checked);
 
+    void on_PTE_MessageWindow_customContextMenuRequested(const QPoint &pos);
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);

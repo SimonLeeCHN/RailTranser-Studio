@@ -1328,6 +1328,9 @@ Stop
           <pointsize>11</pointsize>
          </font>
         </property>
+        <property name="contextMenuPolicy">
+         <enum>Qt::CustomContextMenu</enum>
+        </property>
         <property name="lineWrapMode">
          <enum>QPlainTextEdit::NoWrap</enum>
         </property>

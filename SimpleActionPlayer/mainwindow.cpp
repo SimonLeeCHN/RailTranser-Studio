@@ -574,3 +574,15 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
         this->printMessage(QString(tr("载体车未都处于待机状态")));
     }
 }
+
+void MainWindow::on_PTE_MessageWindow_customContextMenuRequested(const QPoint &pos)
+{
+    Q_UNUSED(pos);
+
+    if(QMessageBox::Ok == QMessageBox::information(this,tr("清除调试信息"),tr("是否要清除调试信息？"),QMessageBox::Ok,QMessageBox::Cancel))
+    {
+        ui->PTE_MessageWindow->clear();
+    }
+
+    return;
+}

@@ -274,7 +274,7 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     }
 
     //设置状态
-    if(stu > 0)
+    if((stu >= CARSTATUS_ERROR) && (stu <= CARSTATUS_RUNNING))
     {
         QModelIndex tempIndex = this->index(carNum - 1,INFORM_CARSTATUS_COLUMN);
         this->setData(tempIndex,QVariant(ConvertCmdToString(map_StatusCmd,stu)));
@@ -296,6 +296,10 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
             case CARSTATUS_RUNNING:
             {
                 tempItem->setIcon(QIcon(":/img/carrier_running"));
+                break;
+            }
+            default:
+            {
                 break;
             }
         }

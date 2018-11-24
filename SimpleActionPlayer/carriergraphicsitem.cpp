@@ -125,6 +125,5 @@ void CarrierGraphicsItem::advance(int step)
         return;
 
     this->setPos(m_qpGraphicsPoint);
-    qDebug()<<"GraphicCarrier advance";
 }
 

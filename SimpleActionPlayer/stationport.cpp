@@ -11,11 +11,14 @@
 #define PACKAGE_TAIL    0xFF
 
 #define PACKAGE_CMD_POS     2
-#define PACKAGE_HEARTBEAT_CARNUM_POS        5       //去掉了包头
+#define PACKAGE_HEARTBEAT_LEN               11  //去掉了包头
+#define PACKAGE_HEARTBEAT_CARNUM_POS        5
 #define PACKAGE_HEARTBEAT_CARSTATUS_POS     6
 #define PACKAGE_HEARTBEAT_POSHEAD_POS       7
-#define PACKAGE_PROFILE_CARNUM_POS          5
-#define PACKAGE_PROFILE_DATALENG            5
+
+#define PACKAGE_CONFIG_LEN                 9
+#define PACKAGE_CONFIG_CARNUM_POS          5
+#define PACKAGE_CONFIG_DATALENG            5
 
 #define ADDRESS_CARRIER_BASE    0x10
 #define DATALEN_FIXED_VALUE     4
@@ -116,11 +119,11 @@ StationPort::StationPort()
     connect(this , &StationPort::readyRead , this , &StationPort::OnStationPortDataCome);
 
     //线程初始化
-    DataSendWorker* pDataSendWorker = new DataSendWorker(this);
-    pDataSendWorker->moveToThread(&m_tDataSendThread);
-    connect(&m_tDataSendThread,&QThread::finished,pDataSendWorker,&QObject::deleteLater);
-    connect(this,&StationPort::RequestThreadSendData,pDataSendWorker,&DataSendWorker::PackAndSendData);
-    m_tDataSendThread.start();
+//    DataSendWorker* pDataSendWorker = new DataSendWorker(this);
+//    pDataSendWorker->moveToThread(&m_tDataSendThread);
+//    connect(&m_tDataSendThread,&QThread::finished,pDataSendWorker,&QObject::deleteLater);
+//    connect(this,&StationPort::RequestThreadSendData,pDataSendWorker,&DataSendWorker::PackAndSendData);
+//    m_tDataSendThread.start();
 
 }
 
@@ -232,25 +235,52 @@ void StationPort::IdentifyListCommand()
         {
             case PORT_HEARTBEAT_BACK:
             {
-                //发射信号，返回车辆号,状态编码,目前位置
-                int carNum = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARNUM_POS);
-                int status = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARSTATUS_POS);
-                int pos = 0;
-                for(int i = 0;i < 4;i++)
-                    pos |= ((unsigned char)(m_List_PackageData.first().at(PACKAGE_HEARTBEAT_POSHEAD_POS + i)) << (8*(3 - i)));
+                //包长度检查
+                if(m_List_PackageData.first().length() == PACKAGE_HEARTBEAT_LEN)
+                {
+                    //发射信号，返回车辆号,状态编码,目前位置
+                    int carNum = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARNUM_POS);
+                    int status = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARSTATUS_POS);
+                    int pos = 0;
+                    for(int i = 0;i < 4;i++)
+                        pos |= ((unsigned char)(m_List_PackageData.first().at(PACKAGE_HEARTBEAT_POSHEAD_POS + i)) << (8*(3 - i)));
 
-                emit RequestSetCarrierStatus(carNum,status,pos);
+                    emit RequestSetCarrierStatus(carNum,status,pos);
+                }
+                else
+                {
+                    QString tempStr = m_List_PackageData.first().toHex();
+                    tempStr.prepend(QString("Error Heartbeat Back:  "));
+                    emit RequestPrintMessage(tempStr);
+                }
 
                 break;
             }
             case PORT_CONFIG_BACK:
             {
-                //车辆号 速度 方向 速度曲线 使能
-                QByteArray carProfile = m_List_PackageData.first().mid(PACKAGE_PROFILE_CARNUM_POS,PACKAGE_PROFILE_DATALENG);
 
-                emit RequestSetCarrierProfile(carProfile);
+                //包长度检查
+                if(m_List_PackageData.first().length() == PACKAGE_CONFIG_LEN)
+                {
+                    //车辆号 速度 方向 速度曲线 使能
+                    QByteArray carProfile = m_List_PackageData.first().mid(PACKAGE_CONFIG_CARNUM_POS,PACKAGE_CONFIG_DATALENG);
+
+                    emit RequestSetCarrierProfile(carProfile);
+                }
+                else
+                {
+                    QString tempStr = m_List_PackageData.first().toHex();
+                    tempStr.prepend(QString("Error Config Back:  "));
+                    emit RequestPrintMessage(tempStr);
+                }
 
                 break;
+            }
+            default:
+            {
+                QString tempStr = m_List_PackageData.first().toHex();
+                tempStr.prepend(QString("Error Port Identify:  "));
+                emit RequestPrintMessage(tempStr);
             }
         }
         m_List_PackageData.removeFirst();
@@ -283,25 +313,25 @@ void StationPort::OnStationPortDataCome()
 void StationPort::SendPackageData(QList<QByteArray> list,int port)
 {
     //TODO:发送数据包   根据端口进行打包然后发送   循环3次
-//    packetPackage(list,port);
-//    for(int loopCnt = 0;loopCnt < 3;loopCnt++)
-//    {
-//        for(int i = 0; i < list.count();i++)
-//        {
+    packetPackage(list,port);
+    for(int loopCnt = 0;loopCnt < 3;loopCnt++)
+    {
+        for(int i = 0; i < list.count();i++)
+        {
 
-//#if SHOW_SERIALSEND
-//            QString tempstr = list[i].toHex();
-//            tempstr.prepend("SEND: ");
-//            emit RequestPrintMessage(tempstr);
-//#endif
+#if SHOW_SERIALSEND
+            QString tempstr = list[i].toHex();
+            tempstr.prepend("SEND: ");
+            emit RequestPrintMessage(tempstr);
+#endif
 
-//            this->write(list[i]);
-//        }
-//    }
+            this->write(list[i]);
+        }
+    }
 
     //交给发送线程进行打包和发送
-    packetPackage(list,port);
-    emit RequestThreadSendData(list);
+//    packetPackage(list,port);
+//    emit RequestThreadSendData(list);
 
 }
 

@@ -13,6 +13,7 @@
 #include <QScrollBar>
 #include <QStringList>
 #include <QPainter>
+#include <QTime>
 #include <QFileDialog>
 
 #include "stationport.h"
@@ -382,42 +383,46 @@ void MainWindow::OnAroseCasfCreatorError(QProcess::ProcessError error)
 
 void MainWindow::OnRegesitFileRelation()
 {
-    QMessageBox::information(this,tr("Information"),tr("注册文件关联可能需要管理员权限运行！"));
+    if(QMessageBox::Ok == QMessageBox::information(this,tr("Information"),tr("注册文件关联可能需要管理员权限运行！"),QMessageBox::Ok,QMessageBox::Cancel))
+    {
+        QString strApplicationFilePath = qApp->applicationFilePath();
+        strApplicationFilePath.replace("/","\\");
+        QString strApdIconPath = strApplicationFilePath + QString(",1");
+        QString strCasfIconPath = strApplicationFilePath + QString(",2");
 
-    QString strApplicationFilePath = qApp->applicationFilePath();
-    strApplicationFilePath.replace("/","\\");
-    QString strApdIconPath = strApplicationFilePath + QString(",1");
-    QString strCasfIconPath = strApplicationFilePath + QString(",2");
+        QByteArray ba = strApplicationFilePath.toLocal8Bit();
+        char* charAppFilePath = new char[ba.length()];
+        strcpy(charAppFilePath,ba.data());
 
-    QByteArray ba = strApplicationFilePath.toLocal8Bit();
-    char* charAppFilePath = new char[ba.length()];
-    strcpy(charAppFilePath,ba.data());
+        ba = strApdIconPath.toLocal8Bit();
+        char* charApdPath = new char[ba.length()];
+        strcpy(charApdPath,ba.data());
 
-    ba = strApdIconPath.toLocal8Bit();
-    char* charApdPath = new char[ba.length()];
-    strcpy(charApdPath,ba.data());
-
-    ba = strCasfIconPath.toLocal8Bit();
-    char* charCasfPath = new char[ba.length()];
-    strcpy(charCasfPath,ba.data());
+        ba = strCasfIconPath.toLocal8Bit();
+        char* charCasfPath = new char[ba.length()];
+        strcpy(charCasfPath,ba.data());
 
 
-    RegisterFileRelation((char*)".apd",
-                         (char*)"ActionPlayerData.Image.1",
-                            charAppFilePath,
-                            charApdPath,
-                            (char*)"ActionPlayer Project Data");
+        RegisterFileRelation((char*)".apd",
+                             (char*)"ActionPlayerData.Image.1",
+                                charAppFilePath,
+                                charApdPath,
+                                (char*)"ActionPlayer Project Data");
 
-    RegisterFileRelation((char*)".casf",
-                         (char*)"CarrierAutoScriptFile.Image.2",
-                            (char*)"",
-                            charCasfPath,
-                            (char*)"Carrier Auto Script File");
+        RegisterFileRelation((char*)".casf",
+                             (char*)"CarrierAutoScriptFile.Image.2",
+                                (char*)"",
+                                charCasfPath,
+                                (char*)"Carrier Auto Script File");
+    }
 
 }
 
 void MainWindow::printMessage(QString str)
 {
+    QTime _NowTime = QTime::currentTime();
+    str.prepend(QString(_NowTime.toString("hh-mm-ss:  ")));
+
     ui->PTE_MessageWindow->appendPlainText(str);
     ui->PTE_MessageWindow->verticalScrollBar()->setValue(ui->PTE_MessageWindow->verticalScrollBar()->maximumHeight());
 }

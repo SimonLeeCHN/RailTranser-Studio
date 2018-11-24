@@ -45,7 +45,7 @@ MainWindow::~MainWindow()
     if(m_pStationPort->isOpen())
         m_pStationPort->stopConnect();
 
-    if(m_pCasfCreatorProcess->state() == QProcess::Running)
+    if((m_pCasfCreatorProcess != NULL) && (m_pCasfCreatorProcess->state() == QProcess::Running))
     {
         m_pCasfCreatorProcess->close();
         delete m_pCasfCreatorProcess;
@@ -300,17 +300,6 @@ void MainWindow::componentInit()
 
 void MainWindow::componentDeinit()
 {
-    //动作播放器
-    disconnect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
-    delete m_pActionPlayer;
-
-    //动作执行器
-    disconnect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
-    delete m_pRealActionActuator;
-
-    //载体车
-    m_pCarrier->OnStopHearbeatTimer();
-
     disconnect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
     disconnect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     disconnect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
@@ -322,6 +311,17 @@ void MainWindow::componentDeinit()
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
+
+    //动作播放器
+    disconnect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
+    delete m_pActionPlayer;
+
+    //动作执行器
+    disconnect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
+    delete m_pRealActionActuator;
+
+    //载体车
+    m_pCarrier->OnStopHearbeatTimer();
 }
 
 /*      SLOT     */

@@ -504,7 +504,8 @@ void MainWindow::on_BTN_Stop_clicked(bool checked)
 
     QList<QByteArray> tempList;
 
-    for(int i = 0;i < m_iCarrierNum;i++)
+    /*
+    for(int i = 0;i < m_iCarrierNum;i++)      //由于网管时广播模式，停止信号总共只需要发送一次
     {
         QByteArray tempArray;
 
@@ -513,6 +514,14 @@ void MainWindow::on_BTN_Stop_clicked(bool checked)
 
         tempList<<tempArray;
     }
+    */
+
+    QByteArray tempArray;
+    tempArray.append(1);      //车辆号
+    tempArray.append(1);      //数据
+    tempList<<tempArray;
+
+
     m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
     m_pActionPlayer->stopActionPlayer();
 }
@@ -558,7 +567,8 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
     {
         QList<QByteArray> tempList;
 
-        for(int i = 0;i < m_iCarrierNum;i++)
+        /*
+        for(int i = 0;i < 1;i++)          //由于网管时广播模式，复位信号总共只需要发送一次
         {
             QByteArray tempArray;
 
@@ -567,6 +577,12 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
 
             tempList<<tempArray;
         }
+        */
+
+        QByteArray tempArray;
+        tempArray.append(1);      //车辆号
+        tempArray.append(2);        //数据
+        tempList<<tempArray;
 
         m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
         m_pActionPlayer->stopActionPlayer();

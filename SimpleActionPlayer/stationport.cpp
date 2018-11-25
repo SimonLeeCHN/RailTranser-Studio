@@ -340,11 +340,11 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
         }
     }
 
+    /*
     //交给发送线程进行打包和发送
-//    packetPackage(list,port);
-//    emit RequestThreadSendData(list);
-
-
+    packetPackage(list,port);
+    emit RequestThreadSendData(list);
+    */
 
     //完成后打开carrier心跳包
     emit RequestStartHeartbeatTimer();
@@ -355,9 +355,6 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
 ///////////////////////////////////////////////////////////////////
 void DataSendWorker::PackAndSendData(QList<QByteArray> list)
 {
-    //线程内将原始数据进行打包
-//    this->PackRawData(list,port);
-
     //循环发送
     for(int loopCnt = 0;loopCnt < PORT_SENDLOOP_TIME;loopCnt++)
     {

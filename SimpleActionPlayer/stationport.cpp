@@ -212,6 +212,7 @@ void StationPort::SplitPortdataPackage()
     QByteArray packageTail("\xFF",1);
     int index = 0,packageTailLen = packageTail.length(),packageHeadLen = 1;
     int from = packageHeadLen;
+    bool isPackdataCame = false;    //缓冲区内是否有数据包存在
 
     while((index = m_RawData.indexOf(packageTail,from)) != -1)
     {
@@ -221,8 +222,14 @@ void StationPort::SplitPortdataPackage()
         TransferDataAfterRecive(m_List_PackageData.last());
 
         from = index + packageHeadLen + packageTailLen;
+
+        isPackdataCame = true;
     }
-    m_RawData = m_RawData.right(m_RawData.length() - (from - packageTailLen));
+
+    if(isPackdataCame)
+        m_RawData = m_RawData.right(m_RawData.length() - (from - packageTailLen));
+    else
+        m_RawData.clear();
 }
 
 void StationPort::IdentifyListCommand()
@@ -304,7 +311,7 @@ void StationPort::OnStationPortDataCome()
     emit RequestPrintMessage(tempStr);
 #endif
 
-    //TODO:分析包并归类、响应
+    //分析包并归类、响应
     SplitPortdataPackage();
     IdentifyListCommand();
 
@@ -312,7 +319,10 @@ void StationPort::OnStationPortDataCome()
 
 void StationPort::SendPackageData(QList<QByteArray> list,int port)
 {
-    //TODO:发送数据包   根据端口进行打包然后发送   循环3次
+    //发送数据前关闭carrier心跳包
+    emit RequestStopHeartbeatTimer();
+
+    //发送数据包   根据端口进行打包然后发送   循环3次
     packetPackage(list,port);
     for(int loopCnt = 0;loopCnt < 3;loopCnt++)
     {
@@ -332,6 +342,11 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
     //交给发送线程进行打包和发送
 //    packetPackage(list,port);
 //    emit RequestThreadSendData(list);
+
+
+
+    //完成后打开carrier心跳包
+    emit RequestStartHeartbeatTimer();
 
 }
 

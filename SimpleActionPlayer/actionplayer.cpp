@@ -175,7 +175,7 @@ void ActionPlayer::doNextStep()
             QString strMessage = "DEY " + tStrList[1] + " s";
             emit RequestPrintMessage(strMessage);
 
-            //TODO:使得延迟一段时间
+            //使得延迟一段时间
             QTimer::singleShot((tStrList[1]).toInt() * 1000,this,&ActionPlayer::doNextStep);
 
             break;

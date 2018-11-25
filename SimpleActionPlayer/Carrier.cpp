@@ -138,7 +138,7 @@ int Carrier::IsAllCarrierStatusSame(QString status)
 
 void Carrier::GetCarrierConfig()
 {
-    //TODO:获取载体车配置
+    //获取载体车配置
 
     QList<QByteArray> requestList;
     for(int i = 0;i < m_iCarrierNum;i++)
@@ -157,7 +157,7 @@ void Carrier::GetCarrierConfig()
 
 void Carrier::SetCarrierConfig()
 {
-    //TODO:设置载体车配置
+    //设置载体车配置
 
     //要求每台载体车处于待机状态
     int erroCarrierNum = IsAllCarrierStatusSame("待机");
@@ -211,7 +211,7 @@ void Carrier::OnStopHearbeatTimer()
 
 void Carrier::OnHeartbeatTimeup()
 {
-    //TODO: 查询上一轮是否所有载体车都有心跳回应记录
+    // 查询上一轮是否所有载体车都有心跳回应记录
     for(int i = 0; i < m_iCarrierNum;i++)
     {
         if(m_HeartbeatRecordList.at(i) == false)
@@ -258,7 +258,7 @@ void Carrier::OnHeartbeatTimeup()
         m_HeartbeatRecordList[i] = false;
     }
 
-//    emit RequestSendPackageData(tempList,PORT_HEARTBEAT_SEND);  //载体车为主动回馈，先关闭心跳包查询定时器，避免串口冲突
+    emit RequestSendPackageData(tempList,PORT_HEARTBEAT_SEND);
 
 }
 
@@ -368,7 +368,7 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
 
 void Carrier::OnSetCarrierProfile(QByteArray config)
 {
-    //TODO:根据回馈进行载体车配置项的设置
+    //根据回馈进行载体车配置项的设置
     int carNum = config.at(0);
 
     //运行速度

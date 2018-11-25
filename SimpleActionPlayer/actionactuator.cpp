@@ -73,10 +73,8 @@ void RealActionActuator::generateMotion(QList<QString> list)
 
     qDebug()<<packedList;
 
-    //在发送命令前关闭心跳包，避免双触发
-    emit RequestStopHeartbeatTimer();
+    //在发送命令前关闭心跳包，避免双触发  在stationport文件中关闭开启
     emit RequestSendPackageData(packedList,PORT_GOALMOVE_SEND);
-    emit RequestStartHeartbeatTimer();
 }
 
 

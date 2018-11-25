@@ -159,12 +159,15 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
 void PathwayGV::onUpdateGraphicCarrier(int number, int status, int pos)
 {
     //由number确定是哪辆GraphicCarrier，直接设置它的status
-    CarrierGraphicsItem* gcItem = m_listGraphicCarrier.at(number-1);
-    gcItem->setStatus(status);
+    if(((number > 0) && number <= m_listGraphicCarrier.count()))
+    {
+        CarrierGraphicsItem* gcItem = m_listGraphicCarrier.at(number-1);
+        gcItem->setStatus(status);
 
-    //由pos找到对应RFID的GraphicPoint，赋值给GraphicCarrier
-    gcItem->setGraphicsPoint(transPosnumToGraphicPoint(pos));
+        //由pos找到对应RFID的GraphicPoint，赋值给GraphicCarrier
+        gcItem->setGraphicsPoint(transPosnumToGraphicPoint(pos));
 
-    //test 强制触发scene进行advance
-    m_pScene->advance();
+        //test 强制触发scene进行advance
+        m_pScene->advance();
+    }
 }

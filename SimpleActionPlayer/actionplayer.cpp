@@ -210,9 +210,10 @@ void ActionPlayer::doNextStep()
             qDebug()<<"play-Error cmd!";
             this->stopActionPlayer();
 
-            return;
+            break;
         }
 
     }
+    return;
 
 }

@@ -265,7 +265,6 @@ void StationPort::IdentifyListCommand()
             }
             case PORT_CONFIG_BACK:
             {
-
                 //包长度检查
                 if(m_List_PackageData.first().length() == PACKAGE_CONFIG_LEN)
                 {
@@ -288,6 +287,8 @@ void StationPort::IdentifyListCommand()
                 QString tempStr = m_List_PackageData.first().toHex();
                 tempStr.prepend(QString("Error Port Identify:  "));
                 emit RequestPrintMessage(tempStr);
+
+                break;
             }
         }
         m_List_PackageData.removeFirst();

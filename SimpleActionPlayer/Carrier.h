@@ -45,6 +45,8 @@ signals:
 
     void RequestSendPackageData(QList<QByteArray> list,int port);
     void RequestAfterAllCarStandby();
+
+    void RequestUpdateGraphicCarrier(int number,int status,int pos);
 };
 
 

@@ -287,13 +287,13 @@ void MainWindow::componentInit()
     connect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
     connect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     connect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
+    connect(m_pCarrier,&Carrier::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier); // 在carrier的onsetcarrierstatus中发射信号
 
     connect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
 
     connect(m_pStationPort,&StationPort::RequestStartHeartbeatTimer,m_pCarrier,&Carrier::OnStartHeartbeatTimer);
     connect(m_pStationPort,&StationPort::RequestStopHeartbeatTimer,m_pCarrier,&Carrier::OnStopHearbeatTimer);
     connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
-    connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
     connect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
 
 }
@@ -303,13 +303,13 @@ void MainWindow::componentDeinit()
     disconnect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
     disconnect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     disconnect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
+    disconnect(m_pCarrier,&Carrier::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
 
     disconnect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
 
     disconnect(m_pStationPort,&StationPort::RequestStartHeartbeatTimer,m_pCarrier,&Carrier::OnStartHeartbeatTimer);
     disconnect(m_pStationPort,&StationPort::RequestStopHeartbeatTimer,m_pCarrier,&Carrier::OnStopHearbeatTimer);
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
-    disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
 
     //动作播放器

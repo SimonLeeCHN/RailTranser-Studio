@@ -266,8 +266,8 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
 {
     //根据心跳包的回馈进行载体车状态设置
 
-    //判断车辆号
-    if((carNum < 0) || (m_iCarrierNum < carNum))
+    //车辆号有效性判断
+    if(!((carNum > 0 ) && (carNum <= m_iCarrierNum)))
     {
         emit RequestPrintDebugMessage(QString(tr("载体车号错误 %1")).arg(QString::number(carNum)));
         return;
@@ -308,6 +308,7 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     {
         //有效性判断错误
         emit RequestPrintDebugMessage(QString(tr("载体车 %1 未定义的状态")).arg(QString::number(carNum)));
+        return;
     }
 
     //设置位置
@@ -320,7 +321,12 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     {
         //有效性判断错误
         emit RequestPrintDebugMessage(QString(tr("载体车 %1 错误的路径点 %2").arg(QString::number(carNum)).arg(QString(QString::number(pos)))));
+        return;
     }
+
+    //更新图形车辆
+    emit RequestUpdateGraphicCarrier(carNum,stu,pos);
+
 
 #if  ENABLE_HEARTBEAT_ERROR_OPTION
 

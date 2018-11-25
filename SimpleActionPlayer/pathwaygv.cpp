@@ -74,7 +74,8 @@ QPoint PathwayGV::transPosnumToGraphicPoint(int pos)
             return it->getGraphicsPoint();
         }
     }
-    qDebug()<<"找不到需求转换点";
+
+    //输入的点位没有对应的RFID位，返回QPoint(0,0)
     return QPoint(0,0);
 }
 

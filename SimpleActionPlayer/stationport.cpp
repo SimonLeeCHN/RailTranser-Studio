@@ -325,19 +325,16 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
 
     //发送数据包   根据端口进行打包然后发送   循环3次
     packetPackage(list,port);
-    for(int loopCnt = 0;loopCnt < PORT_SENDLOOP_TIME;loopCnt++)
+    for(int i = 0; i < list.count();i++)
     {
-        for(int i = 0; i < list.count();i++)
-        {
 
 #if SHOW_SERIALSEND
-            QString tempstr = list[i].toHex();
-            tempstr.prepend("SEND: ");
-            emit RequestPrintMessage(tempstr);
+        QString tempstr = list[i].toHex();
+        tempstr.prepend("SEND: ");
+        emit RequestPrintMessage(tempstr);
 #endif
 
-            this->write(list[i]);
-        }
+        this->write(list[i]);
     }
 
     /*
@@ -355,23 +352,17 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
 ///////////////////////////////////////////////////////////////////
 void DataSendWorker::PackAndSendData(QList<QByteArray> list)
 {
-    //循环发送
-    for(int loopCnt = 0;loopCnt < PORT_SENDLOOP_TIME;loopCnt++)
+    for(int i = 0; i < list.count();i++)
     {
-        for(int i = 0; i < list.count();i++)
-        {
-            m_pParentStationPort->write(list[i]);
-        }
-
-        //延迟
-        QTime _Timer=QTime::currentTime();
-        QTime _NowTimer;
-        do{
-            _NowTimer=QTime::currentTime();
-        }while(_Timer.msecsTo(_NowTimer) <= PORT_DATASEND_DEY);
+        m_pParentStationPort->write(list[i]);
     }
 
-
+    //延迟
+    QTime _Timer=QTime::currentTime();
+    QTime _NowTimer;
+    do{
+        _NowTimer=QTime::currentTime();
+    }while(_Timer.msecsTo(_NowTimer) <= PORT_DATASEND_DEY);
 }
 
 

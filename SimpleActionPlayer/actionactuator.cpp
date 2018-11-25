@@ -67,13 +67,15 @@ void RealActionActuator::generateMotion(QList<QString> list)
 
             tempArray.append(baGoal);
 
-            packedList<<tempArray;
+            //每条目标点运动指令发送多次
+            for(int _loopTime = 0; _loopTime < ACTUATOR_LOOPTIME;_loopTime++)
+            {
+                packedList<<tempArray;
+            }
         }
     }
 
-    qDebug()<<packedList;
-
-    //在发送命令前关闭心跳包，避免双触发  在stationport文件中关闭开启
+    //在发送命令前关闭心跳包，避免双触发  在stationport文件中进行关闭和开启
     emit RequestSendPackageData(packedList,PORT_GOALMOVE_SEND);
 }
 

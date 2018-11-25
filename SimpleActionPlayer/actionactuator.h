@@ -5,6 +5,8 @@
 #include <QList>
 #include <QString>
 
+#define ACTUATOR_LOOPTIME   3
+
 class ActionPlayer;
 
 class ActionActuator : public QObject

@@ -85,15 +85,15 @@ void MainWindow::addActionScriptFile(QList<QUrl> fileList)
 {
     for(int index = 0;index < fileList.count();index++)
     {
-        if(fileList.at(index).fileName().right(4).compare(CARRIERAUTOSCRIPTFILE_SUFFIX))
+        if(fileList.value(index).fileName().right(4).compare(CARRIERAUTOSCRIPTFILE_SUFFIX))
         {
             //不为对应文件
             QMessageBox::critical(this,tr("Cannot Open file"),tr("非自动脚本文件"));
             return;
         }
 
-        QString fileName = fileList.at(index).fileName();
-        QString filePath = fileList.at(index).toLocalFile();
+        QString fileName = fileList.value(index).fileName();
+        QString filePath = fileList.value(index).toLocalFile();
 
         QListWidgetItem *item = new QListWidgetItem(fileName);
         item->setData(Qt::UserRole,filePath);
@@ -215,9 +215,9 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
             return;
         }
 
-        QString x = lineConfigList.at(0);
-        QString y = lineConfigList.at(1);
-        QString number = lineConfigList.at(2);
+        QString x = lineConfigList.value(0);
+        QString y = lineConfigList.value(1);
+        QString number = lineConfigList.value(2);
         QString str = x + " " + y + " " + number;
         rfidList<<str;
     }
@@ -250,10 +250,10 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
             return;
         }
 
-        QString model = QString(lineConfigList.at(0));
-        QString pos = QString(lineConfigList.at(1));
-        QString speed = QString(lineConfigList.at(2));
-        QString status = QString(lineConfigList.at(3));
+        QString model = QString(lineConfigList.value(0));
+        QString pos = QString(lineConfigList.value(1));
+        QString speed = QString(lineConfigList.value(2));
+        QString status = QString(lineConfigList.value(3));
 
         QString str = model + " " + pos + " " + speed + " " + status;
         carrierList<<str;
@@ -440,9 +440,10 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
 
     if((m_pStationPort->isOpen()) && (ui->BTN_Option->text() == "Disconnect"))
     {
-        //关闭端口
+        /******************关闭端口******************/
+
         m_pStationPort->stopConnect();
-        this->printMessage(tr("Close SerialPort OK"));
+        this->printMessage(tr("--成功关闭端口--"));
 
         //界面处理
         ui->BTN_Option->setText(tr("Connect"));
@@ -456,14 +457,15 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
     }
     else
     {
-        //打开端口
+        /******************打开端口******************/
+
         QString portNum = ui->CB_Port->currentText();
 
         if(portNum == "")
         {
             //端口为空
-            QMessageBox::warning(this,tr("SerialPort Error"),tr("不能打开空串口"));
-            this->printMessage(tr("Can not open empty port"));
+            QMessageBox::warning(this,tr("SerialPort Error"),tr("不能打开空端口"));
+            this->printMessage(tr("-!不能打开端口!-"));
             return;
         }
 
@@ -471,7 +473,7 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
         {
             //端口打开成功
             QMessageBox::information(this,QString(tr("SerialPort OK")),tr("端口打开成功"));
-            this->printMessage(tr("Open SerialPort OK"));
+            this->printMessage(tr("--打开端口成功--"));
 
             //加载及连接组件
             this->componentInit();
@@ -488,7 +490,7 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
         {
             //端口打开失败
             QMessageBox::warning(this,tr("SerialPort Error"),tr("端口打开失败"));
-            this->printMessage(tr("Open SerialPort Error"));
+            this->printMessage(tr("-!端口打开失败!-"));
             return;
         }
 

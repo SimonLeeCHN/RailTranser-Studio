@@ -7,6 +7,8 @@
 #define SHOW_SERIALRECV  1   //允许显示串口接收数据
 #define SHOW_SERIALSEND  1   //允许显示串口发送数据
 
+#define PORT_SENDLOOP_TIME      1       //串口循环发送次数
+
 #define PORT_HEARTBEAT_SEND     0x80
 #define PORT_HEARTBEAT_BACK     0x81
 #define PORT_CONFIG_SET         0x90

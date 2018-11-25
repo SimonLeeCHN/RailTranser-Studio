@@ -181,7 +181,7 @@ void StationPort::packetPackage(QList<QByteArray> &list,int port)
         int carNum = list[i].at(0);
         list[i].remove(0,1);
 
-        int dataLen = list.at(i).length();
+        int dataLen = list.value(i).length();
 
         //添加地址
         list[i].prepend(char(0));
@@ -257,7 +257,7 @@ void StationPort::IdentifyListCommand()
                 else
                 {
                     QString tempStr = m_List_PackageData.first().toHex();
-                    tempStr.prepend(QString("Error Heartbeat Back:  "));
+                    tempStr.prepend(QString("错误的心跳包长度:  "));
                     emit RequestPrintMessage(tempStr);
                 }
 
@@ -276,7 +276,7 @@ void StationPort::IdentifyListCommand()
                 else
                 {
                     QString tempStr = m_List_PackageData.first().toHex();
-                    tempStr.prepend(QString("Error Config Back:  "));
+                    tempStr.prepend(QString("错误的配置包长度:  "));
                     emit RequestPrintMessage(tempStr);
                 }
 
@@ -285,7 +285,7 @@ void StationPort::IdentifyListCommand()
             default:
             {
                 QString tempStr = m_List_PackageData.first().toHex();
-                tempStr.prepend(QString("Error Port Identify:  "));
+                tempStr.prepend(QString("错误的端口:  "));
                 emit RequestPrintMessage(tempStr);
 
                 break;
@@ -325,7 +325,7 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
 
     //发送数据包   根据端口进行打包然后发送   循环3次
     packetPackage(list,port);
-    for(int loopCnt = 0;loopCnt < 3;loopCnt++)
+    for(int loopCnt = 0;loopCnt < PORT_SENDLOOP_TIME;loopCnt++)
     {
         for(int i = 0; i < list.count();i++)
         {
@@ -359,7 +359,7 @@ void DataSendWorker::PackAndSendData(QList<QByteArray> list)
 //    this->PackRawData(list,port);
 
     //循环发送
-    for(int loopCnt = 0;loopCnt < 3;loopCnt++)
+    for(int loopCnt = 0;loopCnt < PORT_SENDLOOP_TIME;loopCnt++)
     {
         for(int i = 0; i < list.count();i++)
         {

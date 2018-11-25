@@ -111,7 +111,7 @@ void ActionPlayer::doNextStep()
 
     m_iPlayerStatus = PLAYERSTU_PLAYING;
 
-    QStringList tStrList = m_lCmdList.at(m_iCmdPointer).split(" ");
+    QStringList tStrList = m_lCmdList.value(m_iCmdPointer).split(" ");
     m_iCmdPointer++;
 
     switch(map_StrcmdToCode[tStrList[0]])
@@ -146,7 +146,7 @@ void ActionPlayer::doNextStep()
             for(int i = 0;i < iGroupCmdNum;i++)
             {
                 QString tempStr;
-                QStringList tempStrList = m_lCmdList.at(m_iCmdPointer).split(" ");
+                QStringList tempStrList = m_lCmdList.value(m_iCmdPointer).split(" ");
 
                 tempStr = tempStrList[1] + " " + tempStrList[2] + " " + tempStrList[3];
                 tempList<<tempStr;
@@ -200,7 +200,7 @@ void ActionPlayer::doNextStep()
             emit RequestPrintMessage(strMessage);
 
             //修改指针
-            m_iCmdPointer = tStrList.at(1).toInt();
+            m_iCmdPointer = tStrList.value(1).toInt();
             this->doNextStep();
 
             break;

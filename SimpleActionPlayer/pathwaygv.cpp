@@ -68,7 +68,7 @@ QPoint PathwayGV::transPosnumToGraphicPoint(int pos)
 
     for(int i = 0;i < m_listRfid.count();i++)
     {
-        RfidGraphicsItem* it = (RfidGraphicsItem*)(m_listRfid.at(i));
+        RfidGraphicsItem* it = (RfidGraphicsItem*)(m_listRfid.value(i));
         if(it->getNumber() == pos)
         {
             return it->getGraphicsPoint();
@@ -91,12 +91,12 @@ void PathwayGV::initPathwayRfid(QList<QString> rfidList)
     QPainterPath pathwayPath;
     for(int i = 0 ; i < rfidList.count() ; i++)
     {
-        QStringList lineConfigList = QString(rfidList.at(i)).split(" ");
+        QStringList lineConfigList = QString(rfidList.value(i)).split(" ");
         if(lineConfigList.count() == 3)
         {
-            int x = QString(lineConfigList.at(0)).toInt();
-            int y = QString(lineConfigList.at(1)).toInt();
-            int number = QString(lineConfigList.at(2)).toInt();
+            int x = QString(lineConfigList.value(0)).toInt();
+            int y = QString(lineConfigList.value(1)).toInt();
+            int number = QString(lineConfigList.value(2)).toInt();
             m_listRfid << new RfidGraphicsItem(QPoint(x,y),number);
             m_pScene->addItem(m_listRfid.last());
 
@@ -123,12 +123,12 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
 
     for(int i = 0;i < carrierList.count() ; i++)
     {
-        QStringList lineConfigList = QString(carrierList.at(i)).split(" ");
+        QStringList lineConfigList = QString(carrierList.value(i)).split(" ");
         if(lineConfigList.count() == 4)
         {
             int number = i+1;
-            int pos = QString(lineConfigList.at(1)).toInt();
-            int status = QString(lineConfigList.at(3)).toInt();
+            int pos = QString(lineConfigList.value(1)).toInt();
+            int status = QString(lineConfigList.value(3)).toInt();
 
             if(m_listRfid.count() <= 0)
             {
@@ -161,7 +161,7 @@ void PathwayGV::onUpdateGraphicCarrier(int number, int status, int pos)
     //由number确定是哪辆GraphicCarrier，直接设置它的status
     if(((number > 0) && number <= m_listGraphicCarrier.count()))
     {
-        CarrierGraphicsItem* gcItem = m_listGraphicCarrier.at(number-1);
+        CarrierGraphicsItem* gcItem = m_listGraphicCarrier.value(number-1);
         gcItem->setStatus(status);
 
         //由pos找到对应RFID的GraphicPoint，赋值给GraphicCarrier

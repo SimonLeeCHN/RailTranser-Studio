@@ -65,23 +65,23 @@ Carrier::Carrier(QList<QString> profileList, QObject *parent) : QStandardItemMod
 
     for(int row = 0; row < m_iCarrierNum;row++)
     {
-        QStringList carProfList = QString(profileList.at(row)).split(" ");
+        QStringList carProfList = QString(profileList.value(row)).split(" ");
         for(int column = 0;column < INFORM_NUM;column++)
         {
             QModelIndex index = this->index(row,column);
             switch (column)
             {
                 case INFORM_CARMODEL_COLUMN:
-                    this->setData(index,QVariant(QString(carProfList.at(0))));
+                    this->setData(index,QVariant(QString(carProfList.value(0))));
                     break;
                 case INFORM_CARPOS_COLUMN:
-                    this->setData(index,QVariant(QString(carProfList.at(1)).toInt()));
+                    this->setData(index,QVariant(QString(carProfList.value(1)).toInt()));
                     break;
                 case INFORM_CARSPEED_COLUMN:
-                    this->setData(index,QVariant(ConvertCmdToString(map_SpeedCmd,QString(carProfList.at(2)).toInt())));
+                    this->setData(index,QVariant(ConvertCmdToString(map_SpeedCmd,QString(carProfList.value(2)).toInt())));
                     break;
                 case INFORM_CARSTATUS_COLUMN:
-                    this->setData(index,QVariant(ConvertCmdToString(map_StatusCmd,QString(carProfList.at(3)).toInt())));
+                    this->setData(index,QVariant(ConvertCmdToString(map_StatusCmd,QString(carProfList.value(3)).toInt())));
                     break;
                 default:
                     break;
@@ -163,7 +163,7 @@ void Carrier::SetCarrierConfig()
     int erroCarrierNum = IsAllCarrierStatusSame("待机");
     if(erroCarrierNum != 0)
     {
-        emit RequestPrintDebugMessage("Not all carrier stoped!");
+        emit RequestPrintDebugMessage("状态错误：配置载体车时要求载体车都为待机状态！");
         return;
     }
 
@@ -214,12 +214,12 @@ void Carrier::OnHeartbeatTimeup()
     // 查询上一轮是否所有载体车都有心跳回应记录
     for(int i = 0; i < m_iCarrierNum;i++)
     {
-        if(m_HeartbeatRecordList.at(i) == false)
+        if(m_HeartbeatRecordList.value(i) == false)
         {
             //发现 i+1 号车未回馈心跳包
 
             //debug print
-            QString str = "Carrier " + QString::number(i+1) + " no heartbeat back!";
+            QString str = "载体车 " + QString::number(i+1) + " 无心跳包!";
             emit RequestPrintDebugMessage(str);
 
             //修改图标与状态
@@ -267,107 +267,109 @@ void Carrier::OnSetCarrierStatus(int carNum, int stu, int pos)
     //根据心跳包的回馈进行载体车状态设置
 
     //车辆号有效性判断
-    if(!((carNum > 0 ) && (carNum <= m_iCarrierNum)))
+    if((carNum > 0 ) && (carNum <= m_iCarrierNum))
     {
-        emit RequestPrintDebugMessage(QString(tr("载体车号错误 %1")).arg(QString::number(carNum)));
-        return;
-    }
-
-    //设置状态
-    if((stu >= CARSTATUS_ERROR) && (stu <= CARSTATUS_RUNNING))
-    {
-        QModelIndex tempIndex = this->index(carNum - 1,INFORM_CARSTATUS_COLUMN);
-        this->setData(tempIndex,QVariant(ConvertCmdToString(map_StatusCmd,stu)));
-
-        //修改状态图标
-        QStandardItem* tempItem = this->item(carNum - 1);
-        switch (stu)
+        /*******************************设置状态**************************************/
+        if((stu >= CARSTATUS_ERROR) && (stu <= CARSTATUS_RUNNING))
         {
-            case CARSTATUS_ERROR:
+            QModelIndex tempIndex = this->index(carNum - 1,INFORM_CARSTATUS_COLUMN);
+            this->setData(tempIndex,QVariant(ConvertCmdToString(map_StatusCmd,stu)));
+
+            //修改状态图标
+            QStandardItem* tempItem = this->item(carNum - 1);
+            switch (stu)
             {
-                tempItem->setIcon(QIcon(":/img/carrier_error"));
-                break;
+                case CARSTATUS_ERROR:
+                {
+                    tempItem->setIcon(QIcon(":/img/carrier_error"));
+                    break;
+                }
+                case CARSTATUS_STANDBY:
+                {
+                    tempItem->setIcon(QIcon(":/img/carrier_standby"));
+                    break;
+                }
+                case CARSTATUS_RUNNING:
+                {
+                    tempItem->setIcon(QIcon(":/img/carrier_running"));
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
             }
-            case CARSTATUS_STANDBY:
+
+         /*******************************设置位置**************************************/
+            if(pos >= 0)
             {
-                tempItem->setIcon(QIcon(":/img/carrier_standby"));
-                break;
+                QModelIndex tempIndex = this->index(carNum - 1,INFORM_CARPOS_COLUMN);
+                this->setData(tempIndex,QVariant((unsigned int)(pos)));
+
+            #if  ENABLE_HEARTBEAT_ERROR_OPTION
+
+                //若任何车发回了错误状态，则发送紧急停车
+                bool compStatu = false;
+                compStatu = (QString("错误") == ConvertCmdToString(map_StatusCmd,stu));
+                if(compStatu == true)
+                {
+                    //若状态为 错误 则进行停车操作 其他状态不进行操作
+                    CarrierEntiretyControl("急停");
+                }
+
+            #endif
+
+                //记录心跳包
+                m_HeartbeatRecordList[carNum - 1] = true;
+
+                //更新图形车辆
+                emit RequestUpdateGraphicCarrier(carNum,stu,pos);
+
+                //是否player等待触发
+                if(isPlayerWaittingTrigger)
+                {
+                    //在player等待触发的情况下，至少有一台车状态更新为了在运动中
+                    //说明指令良好传达，可以在下次心跳包来临时检查是否所有车辆处于待机状态，触发下一目标点指令
+                    if(stu == CARSTATUS_RUNNING)
+                    {
+                        isLeastOneCarRunning = true;
+                    }
+
+                    if(isLeastOneCarRunning && (this->IsAllCarrierStatusSame("待机") == 0))
+                    {
+                        isPlayerWaittingTrigger = false;
+                        isLeastOneCarRunning = false;
+
+                        emit RequestPrintDebugMessage("TRIG: 载体车就绪，触发播放");
+
+                        emit RequestAfterAllCarStandby();
+                    }
+                    else
+                    {
+                        if(isLeastOneCarRunning == false)
+                            emit RequestPrintDebugMessage("TRIG: 载体车未运行，无效触发");
+                    }
+                }
             }
-            case CARSTATUS_RUNNING:
+            else
             {
-                tempItem->setIcon(QIcon(":/img/carrier_running"));
-                break;
+                //位置有效性判断错误
+                emit RequestPrintDebugMessage(QString(tr("载体车 %1 错误的路径点 %2").arg(QString::number(carNum)).arg(QString(QString::number(pos)))));
+                return;
             }
-            default:
-            {
-                break;
-            }
-        }
-    }
-    else
-    {
-        //有效性判断错误
-        emit RequestPrintDebugMessage(QString(tr("载体车 %1 未定义的状态")).arg(QString::number(carNum)));
-        return;
-    }
-
-    //设置位置
-    if(pos >= 0)
-    {
-        QModelIndex tempIndex = this->index(carNum - 1,INFORM_CARPOS_COLUMN);
-        this->setData(tempIndex,QVariant((unsigned int)(pos)));
-    }
-    else
-    {
-        //有效性判断错误
-        emit RequestPrintDebugMessage(QString(tr("载体车 %1 错误的路径点 %2").arg(QString::number(carNum)).arg(QString(QString::number(pos)))));
-        return;
-    }
-
-    //更新图形车辆
-    emit RequestUpdateGraphicCarrier(carNum,stu,pos);
-
-
-#if  ENABLE_HEARTBEAT_ERROR_OPTION
-
-    //若任何车发回了错误状态，则发送紧急停车
-    bool compStatu = false;
-    compStatu = (QString("错误") == ConvertCmdToString(map_StatusCmd,stu));
-    if(compStatu == true)
-    {
-        //若状态为 错误 则进行停车操作 其他状态不进行操作
-        CarrierEntiretyControl("急停");
-    }
-
-#endif
-
-    //记录心跳包
-    m_HeartbeatRecordList[carNum - 1] = true;
-
-    //是否player等待触发
-    if(isPlayerWaittingTrigger)
-    {
-        //在player等待触发的情况下，至少有一台车状态更新为了在运动中
-        //说明指令良好传达，可以在下次心跳包来临时检查是否所有车辆处于待机状态，触发下一目标点指令
-        if(stu == CARSTATUS_RUNNING)
-        {
-            isLeastOneCarRunning = true;
-        }
-
-        if(isLeastOneCarRunning && (this->IsAllCarrierStatusSame("待机") == 0))
-        {
-            isPlayerWaittingTrigger = false;
-            isLeastOneCarRunning = false;
-
-            emit RequestPrintDebugMessage("TRIG: triger from carrier");
-
-            emit RequestAfterAllCarStandby();
         }
         else
         {
-            if(isLeastOneCarRunning == false)
-                emit RequestPrintDebugMessage("TRIG: not at least one car running");
+            //状态有效性判断错误
+            emit RequestPrintDebugMessage(QString(tr("载体车 %1 未定义的状态")).arg(QString::number(carNum)));
+            return;
         }
+    }
+    else
+    {
+        //车辆号错误
+        emit RequestPrintDebugMessage(QString(tr("载体车号错误 %1")).arg(QString::number(carNum)));
+        return;
     }
 
 }

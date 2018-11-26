@@ -58,15 +58,10 @@ signals:
 
     void RequestThreadSendData(QList<QByteArray> list);
 
-    void RequestStopHeartbeatTimer();
-    void RequestStartHeartbeatTimer();
-
     void RequestSetCarrierStatus(int carNum,int stu,int pos);
     void RequestSetCarrierProfile(QByteArray config);
 
 };
-
-#define PORT_DATASEND_DEY   50
 
 class DataSendWorker : public QObject
 {

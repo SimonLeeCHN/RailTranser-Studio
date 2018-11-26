@@ -89,12 +89,14 @@ Carrier::Carrier(QList<QString> profileList, QObject *parent) : QStandardItemMod
         }
     }
 
+    /*  初始为丢失状态，不设置图标
     //设置图标
     for(int row = 0;row < m_iCarrierNum;row++)
     {
         QStandardItem* tempItem = this->item(row);
         tempItem->setIcon(QIcon(":/img/carrier_standby"));
     }
+    */
 
     //初始化心跳包记录表
     for (int i = 0;i < m_iCarrierNum;i++)
@@ -238,7 +240,19 @@ void Carrier::OnHeartbeatTimeup()
         }
     }
 
+    /*
+     * 检查是否所有载体车都已经待机
+     * 如果待机，则心跳包的任务已经完成
+     * 关闭心跳包定时器，直到下次关闭开启端口
+     */
+    if(IsAllCarrierStatusSame("待机") == 0)
+    {
+        emit RequestPrintDebugMessage("--载体车已就绪，可以操作--");
 
+        this->OnStopHearbeatTimer();
+        emit RequestAfterAllCarrierAlive();
+        return;
+    }
 
     //心跳查询
     QList<QByteArray> tempList;

@@ -32,6 +32,7 @@ public slots:
     void OnAroseCasfCreator();
     void OnAroseCasfCreatorError(QProcess::ProcessError error);
     void OnRegesitFileRelation();
+    void OnEnsureAllCarrierAlive();
 
 private slots:   
     void on_BTN_Refresh_clicked(bool checked);
@@ -68,6 +69,8 @@ private:
     void initWindowStyle();
     void initMenu();
     void fillAvaliablePorts();
+    void disableUserInterface();
+    void enableUserInterface();
 
     void componentInit();
     void componentDeinit();

@@ -42,6 +42,7 @@ public slots:
 
 signals:
     void RequestPrintDebugMessage(QString text);
+    void RequestAfterAllCarrierAlive();
 
     void RequestSendPackageData(QList<QByteArray> list,int port);
     void RequestAfterAllCarStandby();

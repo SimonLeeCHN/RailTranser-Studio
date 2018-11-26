@@ -117,7 +117,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("CASF-ActionPlayer V3.0.6"));
+    setWindowTitle(tr("CASF-ActionPlayer V3.0.7"));
 
     //控件初始化
     ui->BTN_Stop->setEnabled(false);
@@ -150,6 +150,37 @@ void MainWindow::fillAvaliablePorts()
     {
         ui->CB_Port->addItem(info.portName());
     }
+}
+
+/*
+ *  打开串口后，系统将开启心跳包定时器
+ * 在确保所有载体车都有心跳回馈之前，该函数将用户可以操作的界面进行
+ * disable
+ *
+ */
+void MainWindow::disableUserInterface()
+{
+    //操作按钮
+    ui->BTN_Stop->setEnabled(false);
+    ui->BTN_ReLocate->setEnabled(false);
+
+    //动作列表
+    ui->LW_ActionSortcutList->setEnabled(false);
+}
+
+/*
+ * 在判断所有载体车都有心跳包回馈后，在重新关开串口前，永久关闭心跳包定时器
+ * 并用该函数使能用户可以操作的界面
+ */
+
+void MainWindow::enableUserInterface()
+{
+    //操作按钮
+    ui->BTN_Stop->setEnabled(true);
+    ui->BTN_ReLocate->setEnabled(true);
+
+    //动作列表
+    ui->LW_ActionSortcutList->setEnabled(true);
 }
 
 void MainWindow::loadProjectFile(QUrl fileUrl)
@@ -281,18 +312,17 @@ void MainWindow::componentInit()
     m_pRealActionActuator = new RealActionActuator();
     connect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
 
-    //载体车
+    //载体车心跳包开启
     m_pCarrier->OnStartHeartbeatTimer();
 
     connect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
+    connect(m_pCarrier,&Carrier::RequestAfterAllCarrierAlive,this,&MainWindow::OnEnsureAllCarrierAlive);
     connect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     connect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
     connect(m_pCarrier,&Carrier::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier); // 在carrier的onsetcarrierstatus中发射信号
 
     connect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
 
-    connect(m_pStationPort,&StationPort::RequestStartHeartbeatTimer,m_pCarrier,&Carrier::OnStartHeartbeatTimer);
-    connect(m_pStationPort,&StationPort::RequestStopHeartbeatTimer,m_pCarrier,&Carrier::OnStopHearbeatTimer);
     connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
     connect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
 
@@ -300,15 +330,17 @@ void MainWindow::componentInit()
 
 void MainWindow::componentDeinit()
 {
+    //载体车心跳包关闭
+    m_pCarrier->OnStopHearbeatTimer();
+
     disconnect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
+    disconnect(m_pCarrier,&Carrier::RequestAfterAllCarrierAlive,this,&MainWindow::OnEnsureAllCarrierAlive);
     disconnect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     disconnect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
     disconnect(m_pCarrier,&Carrier::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
 
     disconnect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
 
-    disconnect(m_pStationPort,&StationPort::RequestStartHeartbeatTimer,m_pCarrier,&Carrier::OnStartHeartbeatTimer);
-    disconnect(m_pStationPort,&StationPort::RequestStopHeartbeatTimer,m_pCarrier,&Carrier::OnStopHearbeatTimer);
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
 
@@ -319,9 +351,6 @@ void MainWindow::componentDeinit()
     //动作执行器
     disconnect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     delete m_pRealActionActuator;
-
-    //载体车
-    m_pCarrier->OnStopHearbeatTimer();
 }
 
 /*      SLOT     */
@@ -418,6 +447,11 @@ void MainWindow::OnRegesitFileRelation()
 
 }
 
+void MainWindow::OnEnsureAllCarrierAlive()
+{
+    this->enableUserInterface();
+}
+
 void MainWindow::printMessage(QString str)
 {
     QTime _NowTime = QTime::currentTime();
@@ -448,9 +482,7 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
         //界面处理
         ui->BTN_Option->setText(tr("Connect"));
         ui->BTN_Refresh->setEnabled(true);
-        ui->BTN_Stop->setEnabled(false);
-        ui->BTN_ReLocate->setEnabled(false);
-        ui->LW_ActionSortcutList->setEnabled(false);
+        this->disableUserInterface();
 
         //解除组件
         this->componentDeinit();
@@ -481,9 +513,7 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
             //界面处理
             ui->BTN_Option->setText(tr("Disconnect"));
             ui->BTN_Refresh->setEnabled(false);
-            ui->BTN_Stop->setEnabled(true);
-            ui->BTN_ReLocate->setEnabled(true);
-            ui->LW_ActionSortcutList->setEnabled(true);
+            this->disableUserInterface();
 
         }
         else

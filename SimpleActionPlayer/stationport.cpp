@@ -110,7 +110,7 @@ void TransferDataAfterRecive(QByteArray &data)
 StationPort::StationPort()
 {
     //参数初始化
-    portSettings.baudrate = QSerialPort::Baud115200;
+    portSettings.baudrate = QSerialPort::Baud9600;
     portSettings.databits = QSerialPort::Data8;
     portSettings.parity = QSerialPort::NoParity;
     portSettings.stopbits = QSerialPort::OneStop;
@@ -320,11 +320,10 @@ void StationPort::OnStationPortDataCome()
 
 void StationPort::SendPackageData(QList<QByteArray> list,int port)
 {
-    //发送数据前关闭carrier心跳包
-    emit RequestStopHeartbeatTimer();
-
-    //发送数据包   根据端口进行打包然后发送   循环3次
+    //数据打包
     packetPackage(list,port);
+
+    //将列表中的数据发送
     for(int i = 0; i < list.count();i++)
     {
 
@@ -342,16 +341,13 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
     packetPackage(list,port);
     emit RequestThreadSendData(list);
     */
-
-    //完成后打开carrier心跳包
-    emit RequestStartHeartbeatTimer();
-
 }
 
 
 ///////////////////////////////////////////////////////////////////
 void DataSendWorker::PackAndSendData(QList<QByteArray> list)
 {
+    /*
     for(int i = 0; i < list.count();i++)
     {
         m_pParentStationPort->write(list[i]);
@@ -363,6 +359,7 @@ void DataSendWorker::PackAndSendData(QList<QByteArray> list)
     do{
         _NowTimer=QTime::currentTime();
     }while(_Timer.msecsTo(_NowTimer) <= PORT_DATASEND_DEY);
+    */
 }
 
 

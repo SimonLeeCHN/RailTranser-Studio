@@ -162,7 +162,6 @@ void MainWindow::disableUserInterface()
 {
     //操作按钮
     ui->BTN_Stop->setEnabled(false);
-    ui->BTN_ReLocate->setEnabled(false);
 
     //动作列表
     ui->LW_ActionSortcutList->setEnabled(false);
@@ -177,7 +176,6 @@ void MainWindow::enableUserInterface()
 {
     //操作按钮
     ui->BTN_Stop->setEnabled(true);
-    ui->BTN_ReLocate->setEnabled(true);
 
     //动作列表
     ui->LW_ActionSortcutList->setEnabled(true);
@@ -482,6 +480,7 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
         //界面处理
         ui->BTN_Option->setText(tr("Connect"));
         ui->BTN_Refresh->setEnabled(true);
+        ui->BTN_ReLocate->setEnabled(false);
         this->disableUserInterface();
 
         //解除组件
@@ -513,6 +512,7 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
             //界面处理
             ui->BTN_Option->setText(tr("Disconnect"));
             ui->BTN_Refresh->setEnabled(false);
+            ui->BTN_ReLocate->setEnabled(true);
             this->disableUserInterface();
 
         }

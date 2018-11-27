@@ -117,7 +117,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("CASF-ActionPlayer V3.0.7"));
+    setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.0.7"));
 
     //控件初始化
     ui->BTN_Stop->setEnabled(false);

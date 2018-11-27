@@ -255,18 +255,19 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 
 
     //2--加载载体车信息
-    m_iCarrierNum = 1;
+    int _tempCarrierCount = 1;
+    m_iCarrierNum =0;
     QList<QString> carrierList;
     projectFile.seek(0);
     while(1)
     {
         if(0 == QString::compare(PROJECTFILE_TEXT_CARRIER,projectFile.readLine()))
         {
-            m_iCarrierNum = QString(projectFile.readLine()).toInt();
+            _tempCarrierCount = QString(projectFile.readLine()).toInt();
             break;
         }
     }
-    for(int i = 0;i < m_iCarrierNum;i++)
+    for(int i = 0;i < _tempCarrierCount;i++)
     {
         QString lineData = projectFile.readLine();
         if(lineData.isEmpty())
@@ -286,6 +287,13 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 
         QString str = model + " " + pos + " " + speed + " " + status;
         carrierList<<str;
+
+        /*  mainwindow中的m_iCarrierNum在正确的从工程文件添加载体车入列表了才+1
+         *  避免工程文件中标明的载体车数目和实际配置列数不符合
+         *  导致遗留问题
+         */
+
+        m_iCarrierNum++;
 
     }
     //初始化载体车

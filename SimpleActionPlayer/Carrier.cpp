@@ -201,6 +201,12 @@ void Carrier::SetCarrierConfig()
 
 void Carrier::OnStartHeartbeatTimer()
 {
+    //清除心跳包回应记录
+    for (int i = 0;i < m_iCarrierNum;i++)
+    {
+        m_HeartbeatRecordList[i] = false;
+    }
+
     connect(m_pHeartbeatTimer,&QTimer::timeout,this,&Carrier::OnHeartbeatTimeup);
     m_pHeartbeatTimer->start(HEARTBEAT_TIME);
 }

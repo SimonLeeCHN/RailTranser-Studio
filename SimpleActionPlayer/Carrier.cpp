@@ -262,8 +262,8 @@ void Carrier::OnHeartbeatTimeup()
 
     //心跳查询
     QList<QByteArray> tempList;
-    /*
-    for(int i = 0;i < m_iCarrierNum;i++)      //由于网管时广播模式，心跳包查询信号总共只需要发送一次
+
+    for(int i = 0;i < m_iCarrierNum;i++)
     {
         //先为stationport加入车辆号辨识，再加数据体
 
@@ -272,11 +272,6 @@ void Carrier::OnHeartbeatTimeup()
         tempArray.append(i+1);
         tempList << tempArray;
     }
-    */
-
-    QByteArray tempArray;
-    tempArray.append(1).append(1);
-    tempList << tempArray;
 
 
     //清除回应记录

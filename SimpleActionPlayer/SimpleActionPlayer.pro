@@ -35,7 +35,8 @@ SOURCES += \
     pathwaygv.cpp \
     rfidgraphicsitem.cpp \
     carriergraphicsitem.cpp \
-    plantformapply.cpp
+    plantformapply.cpp \
+    carriermanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,7 +47,8 @@ HEADERS += \
     pathwaygv.h \
     rfidgraphicsitem.h \
     carriergraphicsitem.h \
-    plantformapply.h
+    plantformapply.h \
+    carriermanager.h
 
 FORMS += \
         mainwindow.ui
@@ -56,7 +58,7 @@ RESOURCES += \
 
 RC_FILE = rc.rc
 
-VERSION = DL-Zigbee_V3.0.7
+VERSION = DL-Zigbee_V3.1.0
 QMAKE_TARGET_COMPANY = Genius
 QMAKE_TARGET_DESCRIPTION = PC-software
 QMAKE_TARGET_COPYRIGHT = All rights recive

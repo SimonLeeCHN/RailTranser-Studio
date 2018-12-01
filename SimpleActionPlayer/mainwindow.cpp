@@ -45,6 +45,9 @@ MainWindow::~MainWindow()
     if(m_pStationPort->isOpen())
         m_pStationPort->stopConnect();
 
+    if(m_pCarrierManager != NULL)
+        delete m_pCarrierManager;
+
     if((m_pCasfCreatorProcess != NULL) && (m_pCasfCreatorProcess->state() == QProcess::Running))
     {
         m_pCasfCreatorProcess->close();
@@ -117,7 +120,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.0.7"));
+    setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.1.0"));
 
     //控件初始化
     ui->BTN_Stop->setEnabled(false);
@@ -191,7 +194,6 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
         QMessageBox::critical(this,tr("Cannot Open file"),tr("非工程文件"));
         return;
     }
-
 
     //避免重复加载
     if(m_bIsProjectFillLoaded)
@@ -297,8 +299,9 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 
     }
     //初始化载体车
-    m_pCarrier = new Carrier(carrierList,this);
-    m_pCarrier->BandViewer(ui->TV_Carrier);
+    m_pCarrierManager = new CarrierManager();
+    m_pCarrierManager->initLogicCarrier(carrierList,this);
+    m_pCarrierManager->m_pCarrier->bandViewer(ui->TV_Carrier);
     ui->GV_CarrierPathway->initGraphicCarrier(carrierList);
 
 
@@ -314,48 +317,38 @@ void MainWindow::componentInit()
     m_pActionPlayer = new ActionPlayer();
     connect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
 
-    //动作执行器
-    m_pRealActionActuator = new RealActionActuator();
-    connect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
+    //载体车
+    connect(m_pCarrierManager,&CarrierManager::RequestPrintDebugMessage,this,&MainWindow::printMessage);
+    connect(m_pCarrierManager,&CarrierManager::RequestAfterAllCarrierTouched,this,&MainWindow::OnEnsureAllCarrierAlive);
+    connect(m_pCarrierManager,&CarrierManager::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
+    connect(m_pCarrierManager,&CarrierManager::RequestSendtoRealCarrier,m_pStationPort,&StationPort::SendPackageData);
+    connect(m_pCarrierManager,&CarrierManager::RequestActionplayerDoNext,m_pActionPlayer,&ActionPlayer::doNextStep);
+    connect(m_pCarrierManager,&CarrierManager::RequestActionplayerStop,m_pActionPlayer,&ActionPlayer::stopActionPlayer);
 
-    //载体车心跳包开启
-    m_pCarrier->OnStartHeartbeatTimer();
+    connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrierManager,&CarrierManager::OnRealCarrierHeartbeatBack);
 
-    connect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
-    connect(m_pCarrier,&Carrier::RequestAfterAllCarrierAlive,this,&MainWindow::OnEnsureAllCarrierAlive);
-    connect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
-    connect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
-    connect(m_pCarrier,&Carrier::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier); // 在carrier的onsetcarrierstatus中发射信号
-
-    connect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
-
-    connect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
-    connect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
+    connect(m_pRealActionActuator,&RealActionActuator::RequestStartPlayingAction,m_pCarrierManager,&CarrierManager::OnStartPlayingAction);
 
 }
 
 void MainWindow::componentDeinit()
 {
-    //载体车心跳包关闭
-    m_pCarrier->OnStopHearbeatTimer();
+    disconnect(m_pCarrierManager,&CarrierManager::RequestPrintDebugMessage,this,&MainWindow::printMessage);
+    disconnect(m_pCarrierManager,&CarrierManager::RequestAfterAllCarrierTouched,this,&MainWindow::OnEnsureAllCarrierAlive);
+    disconnect(m_pCarrierManager,&CarrierManager::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
+    disconnect(m_pCarrierManager,&CarrierManager::RequestSendtoRealCarrier,m_pStationPort,&StationPort::SendPackageData);
+    disconnect(m_pCarrierManager,&CarrierManager::RequestActionplayerDoNext,m_pActionPlayer,&ActionPlayer::doNextStep);
+    disconnect(m_pCarrierManager,&CarrierManager::RequestActionplayerStop,m_pActionPlayer,&ActionPlayer::stopActionPlayer);
 
-    disconnect(m_pCarrier,&Carrier::RequestPrintDebugMessage,this,&MainWindow::printMessage);
-    disconnect(m_pCarrier,&Carrier::RequestAfterAllCarrierAlive,this,&MainWindow::OnEnsureAllCarrierAlive);
-    disconnect(m_pCarrier,&Carrier::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
-    disconnect(m_pCarrier,&Carrier::RequestAfterAllCarStandby,m_pActionPlayer,&ActionPlayer::doNextStep);
-    disconnect(m_pCarrier,&Carrier::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
+    disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrierManager,&CarrierManager::OnRealCarrierHeartbeatBack);
 
-    disconnect(m_pActionPlayer,&ActionPlayer::RequestTriggerAfterCarrierStandby,m_pCarrier,&Carrier::OnActionplayerwaittingTrigger);
-
-    disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrier,&Carrier::OnSetCarrierStatus);
-    disconnect(m_pStationPort,&StationPort::RequestSetCarrierProfile,m_pCarrier,&Carrier::OnSetCarrierProfile);
+    disconnect(m_pRealActionActuator,&RealActionActuator::RequestStartPlayingAction,m_pCarrierManager,&CarrierManager::OnStartPlayingAction);
 
     //动作播放器
     disconnect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
     delete m_pActionPlayer;
 
     //动作执行器
-    disconnect(m_pRealActionActuator,&RealActionActuator::RequestSendPackageData,m_pStationPort,&StationPort::SendPackageData);
     delete m_pRealActionActuator;
 }
 
@@ -523,6 +516,9 @@ void MainWindow::on_BTN_Option_clicked(bool checked)
             ui->BTN_ReLocate->setEnabled(true);
             this->disableUserInterface();
 
+            //carriermanager 开始接触
+            m_pCarrierManager->startTouchRealCarrier();
+
         }
         else
         {
@@ -540,21 +536,7 @@ void MainWindow::on_BTN_Stop_clicked(bool checked)
 {
     Q_UNUSED(checked);
 
-    QList<QByteArray> tempList;
-
-
-    for(int i = 0;i < m_iCarrierNum;i++)
-    {
-        QByteArray tempArray;
-
-        tempArray.append(i+1);      //车辆号
-        tempArray.append(1);        //数据
-
-        tempList<<tempArray;
-    }
-
-    m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
-    m_pActionPlayer->stopActionPlayer();
+    m_pCarrierManager->startRealCarrierEmergencyStop();
 }
 
 void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item)
@@ -594,27 +576,7 @@ void MainWindow::on_BTN_ReLocate_clicked(bool checked)
 {
     Q_UNUSED(checked);
 
-    if(!((m_pCarrier->IsAllCarrierStatusSame("运动中")) == 0))
-    {
-        QList<QByteArray> tempList;
-
-        for(int i = 0;i < m_iCarrierNum;i++)
-        {
-            QByteArray tempArray;
-
-            tempArray.append(i+1);      //车辆号
-            tempArray.append(2);        //数据
-
-            tempList<<tempArray;
-        }
-
-        m_pStationPort->SendPackageData(tempList,PORT_CONTROL_SEND);
-        m_pActionPlayer->stopActionPlayer();
-    }
-    else
-    {
-        this->printMessage(QString(tr("载体车未都处于待机状态")));
-    }
+    m_pCarrierManager->startRealCarrierRelocate();
 }
 
 void MainWindow::on_PTE_MessageWindow_customContextMenuRequested(const QPoint &pos)

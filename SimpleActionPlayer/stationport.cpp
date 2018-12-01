@@ -11,10 +11,11 @@
 #define PACKAGE_TAIL    0xFF
 
 #define PACKAGE_CMD_POS     2
-#define PACKAGE_HEARTBEAT_LEN               11  //去掉了包头
+#define PACKAGE_HEARTBEAT_LEN               15  //去掉了包头
 #define PACKAGE_HEARTBEAT_CARNUM_POS        5
 #define PACKAGE_HEARTBEAT_CARSTATUS_POS     6
 #define PACKAGE_HEARTBEAT_POSHEAD_POS       7
+#define PACKAGE_HEARTBEAT_GOALHEAD_POS      11
 
 #define PACKAGE_CONFIG_LEN                 9
 #define PACKAGE_CONFIG_CARNUM_POS          5
@@ -110,7 +111,7 @@ void TransferDataAfterRecive(QByteArray &data)
 StationPort::StationPort()
 {
     //参数初始化
-    portSettings.baudrate = QSerialPort::Baud9600;
+    portSettings.baudrate = QSerialPort::Baud115200;
     portSettings.databits = QSerialPort::Data8;
     portSettings.parity = QSerialPort::NoParity;
     portSettings.stopbits = QSerialPort::OneStop;
@@ -174,7 +175,8 @@ bool StationPort::stopConnect()
 void StationPort::packetPackage(QList<QByteArray> &list,int port)
 {
     //接受列表化的数据包体，为每一项按照协议加入包头
-    //第一个为要发向的车辆号，后面紧跟的数据
+    //第一个为要发向的车辆号，后面紧跟的按协议来的数据
+    //注意，对于目标点运动指令来说，实际上list中每行开头有两车辆号
     for(int i = 0;i < list.count();i++)
     {
         //提取车辆号并移除
@@ -245,14 +247,17 @@ void StationPort::IdentifyListCommand()
                 //包长度检查
                 if(m_List_PackageData.first().length() == PACKAGE_HEARTBEAT_LEN)
                 {
-                    //发射信号，返回车辆号,状态编码,目前位置
+                    //发射信号，返回车辆号,状态编码,目前位置,目标位置
                     int carNum = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARNUM_POS);
                     int status = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARSTATUS_POS);
                     int pos = 0;
                     for(int i = 0;i < 4;i++)
                         pos |= ((unsigned char)(m_List_PackageData.first().at(PACKAGE_HEARTBEAT_POSHEAD_POS + i)) << (8*(3 - i)));
 
-                    emit RequestSetCarrierStatus(carNum,status,pos);
+                    int goal = 0;
+                    for(int i = 0;i < 4;i++)
+                        goal |= ((unsigned char)(m_List_PackageData.first().at(PACKAGE_HEARTBEAT_GOALHEAD_POS + i)) << (8*(3 - i)));
+                    emit RequestSetCarrierStatus(carNum,status,pos,goal);
                 }
                 else
                 {

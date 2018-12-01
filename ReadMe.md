@@ -30,5 +30,7 @@ Relocate按钮之和串口是否打开逻辑相关，否则用户在紧急停车
 **DL-Zigbee_V3.0.7**
 为DL zigbee特定修改的基于V3.0.7的版本
 
-
 **建立building分支**
+V3.1.0版本
+增加carriermanager进行carrier管理
+包含polling查询与纠错，极大的提高了纠错性

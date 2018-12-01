@@ -8,12 +8,6 @@
 #include <QString>
 #include <QStringList>
 
-union setPos
-{
-    int integer;
-    unsigned char uch[4];
-};
-
 /*
  *  RealActionActuator
  */
@@ -48,15 +42,12 @@ void RealActionActuator::generateMotion(QList<QString> list)
         {
             QByteArray tempArray;
 
-            //先加入一个车辆号，供packerPackage来添加车辆地址，之后再填入数据
-            tempArray.append(leaderCar + carIndex);
-
             //添加数据包要求的车辆号
             tempArray.append(leaderCar + carIndex);
 
-            //注意目标点占位4       基础倍率100
+            //注意目标点占位4
             setPos tempGoal ;
-            tempGoal.integer = leaderCarGoal + (carIndex * 100);
+            tempGoal.integer = leaderCarGoal + (carIndex * 1);
 
             QByteArray baGoal;
             baGoal.append(tempGoal.uch[3]);
@@ -67,16 +58,12 @@ void RealActionActuator::generateMotion(QList<QString> list)
 
             tempArray.append(baGoal);
 
-            //每条目标点运动指令发送多次
-            for(int _loopTime = 0; _loopTime < ACTUATOR_LOOPTIME;_loopTime++)
-            {
-                packedList<<tempArray;
-            }
+            packedList<<tempArray;
         }
     }
 
-    //在发送命令前关闭心跳包，避免双触发  在stationport文件中进行关闭和开启
-    emit RequestSendPackageData(packedList,PORT_GOALMOVE_SEND);
+    //发送动作列表
+    emit RequestStartPlayingAction(packedList);
 }
 
 

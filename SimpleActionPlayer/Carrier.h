@@ -9,7 +9,6 @@
 #include <QTimer>
 #include "StationPort.h"
 
-#define HEARTBEAT_TIME  2000    //ms
 #define ENABLE_HEARTBEAT_ERROR_OPTION  0
 
 class Carrier : public QStandardItemModel
@@ -20,34 +19,18 @@ public:
     Carrier(QList<QString> profileList, QObject *parent = nullptr);
     ~Carrier();
 
-    void BandViewer(QTableView *viewerpoint);
-    int IsAllCarrierStatusSame(QString status);
-    void GetCarrierConfig();
-    void SetCarrierConfig();
+    void bandViewer(QTableView *viewerpointer);
+    bool isAllLogicCarrierStatusSame(QString status);
+    bool isCarrierNumberLegal(int carrierNumber);
+    bool isCarrierStatusLegal(int status);
+    void updateLogicCarrierStatus(int carNum,int stu,int pos);
+    void updateLogicCarrierGoal(QList<QByteArray> actionList);
+    int getSpecificLogicCarrierGoal(int carrierNumber);
 
-private:
-    QTimer* m_pHeartbeatTimer = nullptr;
-    QList<bool> m_HeartbeatRecordList;
     int m_iCarrierNum;
-
-private slots:
-    void OnHeartbeatTimeup();
-
-public slots:
-    void OnStartHeartbeatTimer();
-    void OnStopHearbeatTimer();
-    void OnSetCarrierStatus(int carNum,int stu,int pos);
-    void OnSetCarrierProfile(QByteArray config);
-    void OnActionplayerwaittingTrigger();
 
 signals:
     void RequestPrintDebugMessage(QString text);
-    void RequestAfterAllCarrierAlive();
-
-    void RequestSendPackageData(QList<QByteArray> list,int port);
-    void RequestAfterAllCarStandby();
-
-    void RequestUpdateGraphicCarrier(int number,int status,int pos);
 };
 
 

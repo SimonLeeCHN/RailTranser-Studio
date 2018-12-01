@@ -5,7 +5,11 @@
 #include <QList>
 #include <QString>
 
-#define ACTUATOR_LOOPTIME   3
+union setPos
+{
+    int integer;
+    unsigned char uch[4];
+};
 
 class ActionPlayer;
 
@@ -30,7 +34,7 @@ public:
     void generateMotion(QList<QString> list);
 
 signals:
-    void RequestSendPackageData(QList<QByteArray> list,int port);
+    void RequestStartPlayingAction(QList<QByteArray> actionList);
 
 private:
     QList<QString> m_lCmdParm;

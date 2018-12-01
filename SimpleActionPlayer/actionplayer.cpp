@@ -80,13 +80,6 @@ void ActionPlayer::setActuator(ActionActuator *acac)
     acac->m_pParentPlayer = this;
 }
 
-void ActionPlayer::stopActionPlayer()
-{
-    m_iPlayerStatus = PLAYERSTU_STOP;
-    m_iCmdPointer = 0;
-    m_lCmdList.clear();
-}
-
 int ActionPlayer::getPlayerStatus()
 {
     return m_iPlayerStatus;
@@ -163,8 +156,6 @@ void ActionPlayer::doNextStep()
             this->m_pActuator->generateMotion(tempList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
 
-            emit RequestTriggerAfterCarrierStandby();
-
             break;
         }
         case CMD_DEY:
@@ -216,4 +207,11 @@ void ActionPlayer::doNextStep()
     }
     return;
 
+}
+
+void ActionPlayer::stopActionPlayer()
+{
+    m_iPlayerStatus = PLAYERSTU_STOP;
+    m_iCmdPointer = 0;
+    m_lCmdList.clear();
 }

@@ -20,17 +20,16 @@ public:
     ~ActionPlayer();
     bool loadActionFile(QString fileName);
     void setActuator(ActionActuator* acac);
-    void stopActionPlayer();
+
 
     int getPlayerStatus();
 
 public slots:
     void doNextStep();
+    void stopActionPlayer();
 
 signals:
     void RequestPrintMessage(QString str);
-
-    void RequestTriggerAfterCarrierStandby();
 
 private:
     QList<QString> m_lCmdList;

@@ -9,7 +9,7 @@
 #include <QProcess>
 #include "stationport.h"
 #include "actionplayer.h"
-#include "Carrier.h"
+#include "carriermanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,7 +59,8 @@ private:
     StationPort *m_pStationPort = NULL;
 
     int m_iCarrierNum = 1;
-    Carrier *m_pCarrier;
+
+    CarrierManager* m_pCarrierManager = NULL;
     ActionPlayer *m_pActionPlayer = NULL;
     RealActionActuator *m_pRealActionActuator = NULL;
 

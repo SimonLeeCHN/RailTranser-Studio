@@ -58,7 +58,7 @@ signals:
 
     void RequestThreadSendData(QList<QByteArray> list);
 
-    void RequestSetCarrierStatus(int carNum,int stu,int pos);
+    void RequestSetCarrierStatus(int carNum,int stu,int pos,int goal);
     void RequestSetCarrierProfile(QByteArray config);
 
 };

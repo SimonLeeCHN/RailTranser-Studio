@@ -10,7 +10,7 @@
 #include <QWheelEvent>
 #include <QTimer>
 
-#define RFID_BASEDEV    100
+#define RFID_BASEDEV    1
 
 PathwayGV::PathwayGV(QWidget *parent) :
                 QGraphicsView(parent)

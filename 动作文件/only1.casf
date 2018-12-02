@@ -1,0 +1,5 @@
+STA
+MOV 1 1 4
+DEY 1
+MOV 1 1 12
+END

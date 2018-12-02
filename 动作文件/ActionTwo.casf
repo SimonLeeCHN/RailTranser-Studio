@@ -1,6 +1,0 @@
-STA
-DEY 5
-MOV 2 2 6
-DEY 5
-MOV 1 1 1
-END

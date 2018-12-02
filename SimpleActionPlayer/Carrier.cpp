@@ -100,6 +100,16 @@ void Carrier::bandViewer(QTableView *viewerpointer)
     viewerpointer->setModel(this);
 }
 
+void Carrier::setAllLogicCarrierStatusSame(QString status)
+{
+    //设置所有载体车状态一致
+    for(int i = 0;i < m_iCarrierNum;i++)
+    {
+        QModelIndex tempIndex = this->index(i,INFORM_CARSTATUS_COLUMN);
+        this->setData(tempIndex,QVariant(status));
+    }
+}
+
 bool Carrier::isAllLogicCarrierStatusSame(QString status)
 {
     //检测是否每台载体车都是处于同样的status

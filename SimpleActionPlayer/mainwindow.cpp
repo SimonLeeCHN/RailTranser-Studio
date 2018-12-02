@@ -317,6 +317,9 @@ void MainWindow::componentInit()
     m_pActionPlayer = new ActionPlayer();
     connect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
 
+    //动作执行器
+    m_pRealActionActuator = new RealActionActuator();
+
     //载体车
     connect(m_pCarrierManager,&CarrierManager::RequestPrintDebugMessage,this,&MainWindow::printMessage);
     connect(m_pCarrierManager,&CarrierManager::RequestAfterAllCarrierTouched,this,&MainWindow::OnEnsureAllCarrierAlive);

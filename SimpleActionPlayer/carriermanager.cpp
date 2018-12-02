@@ -23,8 +23,17 @@ void CarrierManager::initLogicCarrier(QList<QString> profileList, QObject *paren
     m_pCarrier = new Carrier(profileList,parent);
 }
 
+/*
+ *  进行载体车接触时，需要先将所有载体车的状态设置为丢失
+ *  避免用户关闭又再次打开端口，自动调用载体车接触检测函数进行接触时
+ *  上次已经接触过的状态影响再次的接触
+ */
 void CarrierManager::startTouchRealCarrier()
 {
+    //先将载体车的状态全设置为丢失
+    m_pCarrier->setAllLogicCarrierStatusSame("丢失");
+
+    //再开启接触轮询
     m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_UNTOUCHED;
     m_iPollingCarrierNumber = 1;
     inMotionPolling();
@@ -51,6 +60,11 @@ void CarrierManager::startRealCarrierRelocate()
 
         //停止actionplayer
         emit RequestActionplayerStop();
+
+        //复位运动轮询
+        m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_RELOCATING;
+        m_iPollingCarrierNumber = 1;
+        inMotionPolling();
 
     }
     else
@@ -82,7 +96,7 @@ void CarrierManager::startRealCarrierEmergencyStop()
 
 /*
  *  载体车运动中轮询：
- *  置CM为INMOTION状态，向x号车发送查询包
+ *  向x号车发送查询包
  *  开启polling超时定时器，若超时，重新调用inMotionPolling补发x号车查询包
  *
  *  在OnRealCarrierHeartbeatBack中，判断若CM为INMOTION状态，关polling超时定时器,
@@ -144,10 +158,11 @@ void CarrierManager::OnStartPlayingAction(QList<QByteArray> actionList)
     m_pCarrier->updateLogicCarrierGoal(actionList);
 
     //为PacketPackage，在每行头添加车辆号
-    for(int _index = 0;_index <= actionList.count();_index++)
+    for(int _index = 0;_index < actionList.count();_index++)
     {
-        QByteArray _tempLine = actionList.at(_index);
-        _tempLine.prepend(_tempLine.at(0));
+        QByteArray _tempLine = actionList.value(_index);
+        char _carNum = _tempLine.at(0);
+        _tempLine.prepend(_carNum);
         actionList[_index] = _tempLine;
     }
 
@@ -162,7 +177,8 @@ void CarrierManager::OnStartPlayingAction(QList<QByteArray> actionList)
 /*
  *  更新logicCarrier状态和当前位置
  *
- *  若CM为INMOTION状态，关polling超时定时器
+ *  关polling超时定时器
+ *  若CM为INMOTION状态，
  *  若返回目标点位和logicCarrier目标点位不符，重发目标点运动指令,重新polling x号车
  *  若当前点与目标点重回，且所有载体车都处于待机状态，触发actionplayer播放下一条指令
  *  若都不是，polling x+1
@@ -182,6 +198,9 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
         return;
     }
 
+    //关polling定时器
+    m_pollingTimer.stop();
+
     //更新logiccarrier状态和当前位置
     m_pCarrier->updateLogicCarrierStatus(carNumber,carStatus,carNowPos);
 
@@ -192,9 +211,6 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
     {
         case CARRIERMANAGER_STATUS_INMOTION:
         {
-            //关polling定时器
-            m_pollingTimer.stop();
-
             //比较返回目标点位和logicCarrier目标点位
             int _logicGoal = m_pCarrier->getSpecificLogicCarrierGoal(carNumber);
             if(!(_logicGoal == carGoal))
@@ -258,9 +274,6 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
         }
         case CARRIERMANAGER_STATUS_UNTOUCHED:
         {
-            //关polling定时器
-            m_pollingTimer.stop();
-
             if(m_pCarrier->isAllLogicCarrierStatusSame("待机"))
             {
                 emit RequestAfterAllCarrierTouched();
@@ -273,6 +286,24 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
             }
 
             //polling x+1
+            m_iPollingCarrierNumber++;
+            if(!(m_pCarrier->isCarrierNumberLegal(m_iPollingCarrierNumber)))
+                m_iPollingCarrierNumber = 1;
+
+            this->inMotionPolling();
+
+            break;
+        }
+        case CARRIERMANAGER_STATUS_RELOCATING:
+        {
+            if(m_pCarrier->isAllLogicCarrierStatusSame("待机"))
+            {
+                m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_STANDBY;
+
+                return;
+            }
+
+            //poling x+1
             m_iPollingCarrierNumber++;
             if(!(m_pCarrier->isCarrierNumberLegal(m_iPollingCarrierNumber)))
                 m_iPollingCarrierNumber = 1;

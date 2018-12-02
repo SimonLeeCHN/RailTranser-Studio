@@ -239,7 +239,13 @@ void StationPort::IdentifyListCommand()
     int count = m_List_PackageData.count();
     for(int index = 0;index < count;index++)
     {
-        unsigned char port = m_List_PackageData.first().at(PACKAGE_CMD_POS);
+        //防止错误
+        if(!(m_List_PackageData.first().count() > PACKAGE_CMD_POS))
+        {
+            continue;
+        }
+
+        unsigned char port = (m_List_PackageData.first())[PACKAGE_CMD_POS];
         switch (port)
         {
             case PORT_HEARTBEAT_BACK:
@@ -248,8 +254,8 @@ void StationPort::IdentifyListCommand()
                 if(m_List_PackageData.first().length() == PACKAGE_HEARTBEAT_LEN)
                 {
                     //发射信号，返回车辆号,状态编码,目前位置,目标位置
-                    int carNum = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARNUM_POS);
-                    int status = m_List_PackageData.first().at(PACKAGE_HEARTBEAT_CARSTATUS_POS);
+                    int carNum = (m_List_PackageData.first())[PACKAGE_HEARTBEAT_CARNUM_POS];
+                    int status = (m_List_PackageData.first())[PACKAGE_HEARTBEAT_CARSTATUS_POS];
                     int pos = 0;
                     for(int i = 0;i < 4;i++)
                         pos |= ((unsigned char)(m_List_PackageData.first().at(PACKAGE_HEARTBEAT_POSHEAD_POS + i)) << (8*(3 - i)));

@@ -20,6 +20,7 @@ public:
     ~Carrier();
 
     void bandViewer(QTableView *viewerpointer);
+    void setAllLogicCarrierStatusSame(QString status);
     bool isAllLogicCarrierStatusSame(QString status);
     bool isCarrierNumberLegal(int carrierNumber);
     bool isCarrierStatusLegal(int status);

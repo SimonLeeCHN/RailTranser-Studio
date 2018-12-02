@@ -246,8 +246,8 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
                 this->inMotionPolling();
             }
 
-            //比较当前位置与目标点
-            if(carNowPos == _logicGoal)
+            //是否所有载体车当前点等于目标点
+            if(m_pCarrier->isAllLogicCarrierMotionAtPoint())
             {
                 //是否所有载体车都处于待机状态
                 if(m_pCarrier->isAllLogicCarrierStatusSame("待机"))

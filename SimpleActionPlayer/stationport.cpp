@@ -242,6 +242,7 @@ void StationPort::IdentifyListCommand()
         //防止错误
         if(!(m_List_PackageData.first().count() > PACKAGE_CMD_POS))
         {
+            m_List_PackageData.removeFirst();
             continue;
         }
 

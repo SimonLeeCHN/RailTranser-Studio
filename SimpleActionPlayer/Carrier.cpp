@@ -110,6 +110,27 @@ void Carrier::setAllLogicCarrierStatusSame(QString status)
     }
 }
 
+/*
+ *  检查是否所有载体车已经运动到点
+ */
+bool Carrier::isAllLogicCarrierMotionAtPoint()
+{
+    for(int _carIndex = 1;_carIndex <= m_iCarrierNum;_carIndex++)
+    {
+        //取得车辆目标点
+        int _logicGoal = this->getSpecificLogicCarrierGoal(_carIndex);
+
+        //取得车辆当前点
+        QModelIndex _tempIndex = this->index(_carIndex - 1,INFORM_CARPOS_COLUMN);
+        int _nowPos = (this->data(_tempIndex)).toInt();
+
+        //比较是否相等
+        if(!(_nowPos == _logicGoal))
+            return false;
+    }
+    return true;
+}
+
 bool Carrier::isAllLogicCarrierStatusSame(QString status)
 {
     //检测是否每台载体车都是处于同样的status

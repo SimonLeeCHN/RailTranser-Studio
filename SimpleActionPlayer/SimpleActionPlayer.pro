@@ -63,5 +63,5 @@ RC_FILE = rc.rc         #应用程序图标，apd图标及casf图标都在该文
 
 VERSION = DL-Zigbee_V3.2.0
 QMAKE_TARGET_COMPANY = Genius
-QMAKE_TARGET_DESCRIPTION = PC-software
+QMAKE_TARGET_DESCRIPTION = CASF-ActionPlayer
 QMAKE_TARGET_COPYRIGHT = All rights recive

@@ -28,8 +28,9 @@ public:
     QByteArray m_RawData;
     QList<QByteArray> m_List_PackageData;
 
-    int startConnect(QString portname);
+    int startConnect(QString portname = "");
     bool stopConnect();
+    void setPort(QString portname);
 
 private:
     struct {

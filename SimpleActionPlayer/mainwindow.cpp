@@ -34,8 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pStationPort = new StationPort();
     connect(m_pStationPort,&StationPort::RequestPrintMessage,this,&MainWindow::printMessage);
 
+    m_pSettingDialog = new SettingDialog(this);
+    connect(m_pSettingDialog,&SettingDialog::RequestSetStationPort,this,&MainWindow::OnSetStationPort);
+
     this->initWindowStyle();
-    this->fillAvaliablePorts();
     this->initMenu();
 
 }
@@ -123,10 +125,7 @@ void MainWindow::initWindowStyle()
     setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.1.0"));
 
     //控件初始化
-    ui->BTN_Stop->setEnabled(false);
-    ui->BTN_ReLocate->setEnabled(false);
     ui->LW_ActionSortcutList->setEnabled(false);
-    ui->BTN_Option->setText(tr("Connect"));
 
     //将LW的拖拽屏蔽，使得MainWindow可以截获拖拽响应
     ui->LW_ActionSortcutList->setAcceptDrops(false);
@@ -140,19 +139,37 @@ void MainWindow::initMenu()
     connect(ui->AC_file_addExistProjectFile,&QAction::triggered,this,&MainWindow::OnAddExistProjectFile);
     connect(ui->AC_help_RegesitFileRelation,&QAction::triggered,this,&MainWindow::OnRegesitFileRelation);
     connect(ui->AC_arose_casfCreator,&QAction::triggered,this,&MainWindow::OnAroseCasfCreator);
-}
+    connect(ui->AC_file_settings,&QAction::triggered,this,&MainWindow::onActAroseSettingDialog);
 
-void MainWindow::fillAvaliablePorts()
-{
-    //清除端口号
-    ui->CB_Port->clear();
+    //toolbar
+    QAction *_actStartLink = new QAction(QIcon(":/img/ctrol_startLink"),tr("Start Link"),this);
+    _actStartLink->setStatusTip(tr("开启连接"));
+    _actStartLink->setEnabled(false);
+    ui->toolBar->addAction(_actStartLink);
+    connect(this,&MainWindow::RequestActStartLinkSetEnabled,_actStartLink,&QAction::setEnabled);
+    connect(_actStartLink,&QAction::triggered,this,&MainWindow::onActStartLinkTriggered);
 
-    //获取并填充可用串口号进入端口box
-    const auto infos = QSerialPortInfo::availablePorts();
-    for (const QSerialPortInfo& info :infos)
-    {
-        ui->CB_Port->addItem(info.portName());
-    }
+    QAction *_actStopLink = new QAction(QIcon(":/img/ctrol_stopLink"),tr("Stop Link"),this);
+    _actStopLink->setStatusTip(tr("断开连接"));
+    _actStopLink->setEnabled(false);
+    ui->toolBar->addAction(_actStopLink);
+    connect(this,&MainWindow::RequestActStopLinkSetEnabled,_actStopLink,&QAction::setEnabled);
+    connect(_actStopLink,&QAction::triggered,this,&MainWindow::onActStopLinkTriggered);
+
+    QAction *_actRelocate = new QAction(QIcon(":/img/ctrol_relocate"),tr("Relocate"),this);
+    _actRelocate->setStatusTip(tr("载体车复位"));
+    _actRelocate->setEnabled(false);
+    ui->toolBar->addAction(_actRelocate);
+    connect(this,&MainWindow::RequestActRelocateSetEnabled,_actRelocate,&QAction::setEnabled);
+    connect(_actRelocate,&QAction::triggered,this,&MainWindow::onActRelocateTriggered);
+
+    QAction *_actEmergencyStop = new QAction(QIcon(":/img/ctrol_emergencyStop"),tr("Emergency Stop"),this);
+    _actEmergencyStop->setStatusTip(tr("载体车复位"));
+    _actEmergencyStop->setEnabled(false);
+    ui->toolBar->addAction(_actEmergencyStop);
+    connect(this,&MainWindow::RequestActEmergencyStopSetEnabled,_actEmergencyStop,&QAction::setEnabled);
+    connect(_actEmergencyStop,&QAction::triggered,this,&MainWindow::onActEmergencyStopTriggered);
+
 }
 
 /*
@@ -163,8 +180,8 @@ void MainWindow::fillAvaliablePorts()
  */
 void MainWindow::disableUserInterface()
 {
-    //操作按钮
-    ui->BTN_Stop->setEnabled(false);
+    //急停按钮
+    emit RequestActEmergencyStopSetEnabled(false);
 
     //动作列表
     ui->LW_ActionSortcutList->setEnabled(false);
@@ -177,8 +194,8 @@ void MainWindow::disableUserInterface()
 
 void MainWindow::enableUserInterface()
 {
-    //操作按钮
-    ui->BTN_Stop->setEnabled(true);
+    //急停按钮
+    emit RequestActEmergencyStopSetEnabled(true);
 
     //动作列表
     ui->LW_ActionSortcutList->setEnabled(true);
@@ -196,7 +213,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
     }
 
     //避免重复加载
-    if(m_bIsProjectFillLoaded)
+    if(m_bIsProjectFileLoaded)
     {
         QMessageBox::critical(this,tr("Cannot Open File"),tr("已加载文件"));
         return;
@@ -306,8 +323,8 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 
 
     //已加载工程文件
-    m_bIsProjectFillLoaded = true;
-    ui->BTN_Option->setEnabled(true);
+    m_bIsProjectFileLoaded = true;
+    emit RequestActStartLinkSetEnabled(true);
     ui->GV_CarrierPathway->setEnabled(true);
 }
 
@@ -454,6 +471,11 @@ void MainWindow::OnEnsureAllCarrierAlive()
     this->enableUserInterface();
 }
 
+void MainWindow::OnSetStationPort(QString portname)
+{
+    m_pStationPort->setPort(portname);
+}
+
 void MainWindow::printMessage(QString str)
 {
     QTime _NowTime = QTime::currentTime();
@@ -461,85 +483,6 @@ void MainWindow::printMessage(QString str)
 
     ui->PTE_MessageWindow->appendPlainText(str);
     ui->PTE_MessageWindow->verticalScrollBar()->setValue(ui->PTE_MessageWindow->verticalScrollBar()->maximumHeight());
-}
-
-void MainWindow::on_BTN_Refresh_clicked(bool checked)
-{
-    Q_UNUSED(checked);
-
-    this->fillAvaliablePorts();
-}
-
-void MainWindow::on_BTN_Option_clicked(bool checked)
-{
-    Q_UNUSED(checked);
-
-    if((m_pStationPort->isOpen()) && (ui->BTN_Option->text() == "Disconnect"))
-    {
-        /******************关闭端口******************/
-
-        m_pStationPort->stopConnect();
-        this->printMessage(tr("--成功关闭端口--"));
-
-        //界面处理
-        ui->BTN_Option->setText(tr("Connect"));
-        ui->BTN_Refresh->setEnabled(true);
-        ui->BTN_ReLocate->setEnabled(false);
-        this->disableUserInterface();
-
-        //解除组件
-        this->componentDeinit();
-    }
-    else
-    {
-        /******************打开端口******************/
-
-        QString portNum = ui->CB_Port->currentText();
-
-        if(portNum == "")
-        {
-            //端口为空
-            QMessageBox::warning(this,tr("SerialPort Error"),tr("不能打开空端口"));
-            this->printMessage(tr("-!不能打开端口!-"));
-            return;
-        }
-
-        if(m_pStationPort->startConnect(portNum) == 1)
-        {
-            //端口打开成功
-            QMessageBox::information(this,QString(tr("SerialPort OK")),tr("端口打开成功"));
-            this->printMessage(tr("--打开端口成功--"));
-
-            //加载及连接组件
-            this->componentInit();
-
-            //界面处理
-            ui->BTN_Option->setText(tr("Disconnect"));
-            ui->BTN_Refresh->setEnabled(false);
-            ui->BTN_ReLocate->setEnabled(true);
-            this->disableUserInterface();
-
-            //carriermanager 开始接触
-            m_pCarrierManager->startTouchRealCarrier();
-
-        }
-        else
-        {
-            //端口打开失败
-            QMessageBox::warning(this,tr("SerialPort Error"),tr("端口打开失败"));
-            this->printMessage(tr("-!端口打开失败!-"));
-            return;
-        }
-
-    }
-
-}
-
-void MainWindow::on_BTN_Stop_clicked(bool checked)
-{
-    Q_UNUSED(checked);
-
-    m_pCarrierManager->startRealCarrierEmergencyStop();
 }
 
 void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item)
@@ -575,13 +518,6 @@ void MainWindow::on_LW_ActionSortcutList_customContextMenuRequested(const QPoint
     qDebug()<<QString("after delete num: %1").arg(ui->LW_ActionSortcutList->count());
 }
 
-void MainWindow::on_BTN_ReLocate_clicked(bool checked)
-{
-    Q_UNUSED(checked);
-
-    m_pCarrierManager->startRealCarrierRelocate();
-}
-
 void MainWindow::on_PTE_MessageWindow_customContextMenuRequested(const QPoint &pos)
 {
     Q_UNUSED(pos);
@@ -592,4 +528,70 @@ void MainWindow::on_PTE_MessageWindow_customContextMenuRequested(const QPoint &p
     }
 
     return;
+}
+
+void MainWindow::onActStartLinkTriggered()
+{
+    if(m_pStationPort->startConnect() == 1)
+    {
+        //端口打开成功
+        QMessageBox::information(this,QString(tr("SerialPort OK")),tr("端口打开成功"));
+        this->printMessage(tr("--打开端口成功--"));
+
+        //加载及连接组件
+        this->componentInit();
+
+        //界面处理
+        emit RequestActStartLinkSetEnabled(false);
+        emit RequestActStopLinkSetEnabled(true);
+        emit RequestActRelocateSetEnabled(true);
+        emit RequestActEmergencyStopSetEnabled(false);
+        this->disableUserInterface();
+
+        //carriermanager 开始接触
+        m_pCarrierManager->startTouchRealCarrier();
+
+    }
+    else
+    {
+        //端口打开失败
+        QMessageBox::warning(this,tr("SerialPort Error"),tr("端口打开失败"));
+        this->printMessage(tr("-!端口打开失败!-"));
+        return;
+    }
+}
+
+void MainWindow::onActStopLinkTriggered()
+{
+    //关闭端口
+    if(m_pStationPort->isOpen())
+    {
+        m_pStationPort->stopConnect();
+        this->printMessage(tr("--成功关闭端口--"));
+    }
+
+    //界面处理
+    emit RequestActStartLinkSetEnabled(true);
+    emit RequestActStopLinkSetEnabled(false);
+    emit RequestActRelocateSetEnabled(false);
+    emit RequestActEmergencyStopSetEnabled(false);
+    this->disableUserInterface();
+
+    //解除组件
+    this->componentDeinit();
+}
+
+void MainWindow::onActRelocateTriggered()
+{
+    m_pCarrierManager->startRealCarrierRelocate();
+}
+
+void MainWindow::onActEmergencyStopTriggered()
+{
+    m_pCarrierManager->startRealCarrierEmergencyStop();
+}
+
+void MainWindow::onActAroseSettingDialog()
+{
+    m_pSettingDialog->show();
 }

@@ -10,6 +10,7 @@
 #include "stationport.h"
 #include "actionplayer.h"
 #include "carriermanager.h"
+#include "settingdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,12 @@ public:
 
     void loadProjectFile(QUrl fileUrl);
 
+signals:
+    void RequestActStartLinkSetEnabled(bool);
+    void RequestActStopLinkSetEnabled(bool);
+    void RequestActRelocateSetEnabled(bool);
+    void RequestActEmergencyStopSetEnabled(bool);
+
 public slots:
     void printMessage(QString str);
     void OnAddExistActionScriptFile();
@@ -33,21 +40,20 @@ public slots:
     void OnAroseCasfCreatorError(QProcess::ProcessError error);
     void OnRegesitFileRelation();
     void OnEnsureAllCarrierAlive();
+    void OnSetStationPort(QString portname);
 
-private slots:   
-    void on_BTN_Refresh_clicked(bool checked);
-
-    void on_BTN_Option_clicked(bool checked);
-
-    void on_BTN_Stop_clicked(bool checked);
-
+private slots:
     void on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item);
 
     void on_LW_ActionSortcutList_customContextMenuRequested(const QPoint &pos);
 
-    void on_BTN_ReLocate_clicked(bool checked);
-
     void on_PTE_MessageWindow_customContextMenuRequested(const QPoint &pos);
+
+    void onActStartLinkTriggered();
+    void onActStopLinkTriggered();
+    void onActRelocateTriggered();
+    void onActEmergencyStopTriggered();
+    void onActAroseSettingDialog();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -55,11 +61,11 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-    bool m_bIsProjectFillLoaded = false;
-    StationPort *m_pStationPort = NULL;
+    bool m_bIsProjectFileLoaded = false;
+    SettingDialog *m_pSettingDialog;
 
     int m_iCarrierNum = 1;
-
+    StationPort *m_pStationPort = NULL;
     CarrierManager* m_pCarrierManager = NULL;
     ActionPlayer *m_pActionPlayer = NULL;
     RealActionActuator *m_pRealActionActuator = NULL;
@@ -69,7 +75,6 @@ private:
     void addActionScriptFile(QList<QUrl> fileList);
     void initWindowStyle();
     void initMenu();
-    void fillAvaliablePorts();
     void disableUserInterface();
     void enableUserInterface();
 

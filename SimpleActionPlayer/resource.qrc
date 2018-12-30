@@ -1,7 +1,11 @@
 <RCC>
     <qresource prefix="/img">
-        <file alias="carrier_error">资源文件/carrier状态图/error.png</file>
-        <file alias="carrier_running">资源文件/carrier状态图/running.png</file>
-        <file alias="carrier_standby">资源文件/carrier状态图/standby.png</file>
+        <file alias="carrier_error">resource file/image/error.png</file>
+        <file alias="carrier_running">resource file/image/running.png</file>
+        <file alias="carrier_standby">resource file/image/standby.png</file>
+        <file alias="ctrol_emergencyStop">resource file/image/emergencyStop.png</file>
+        <file alias="ctrol_relocate">resource file/image/relocate.png</file>
+        <file alias="ctrol_startLink">resource file/image/startLink.png</file>
+        <file alias="ctrol_stopLink">resource file/image/stopLink.png</file>
     </qresource>
 </RCC>

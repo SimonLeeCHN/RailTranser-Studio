@@ -36,7 +36,8 @@ SOURCES += \
     rfidgraphicsitem.cpp \
     carriergraphicsitem.cpp \
     plantformapply.cpp \
-    carriermanager.cpp
+    carriermanager.cpp \
+    settingdialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -48,17 +49,19 @@ HEADERS += \
     rfidgraphicsitem.h \
     carriergraphicsitem.h \
     plantformapply.h \
-    carriermanager.h
+    carriermanager.h \
+    settingdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    settingdialog.ui
 
 RESOURCES += \
     resource.qrc
 
-RC_FILE = rc.rc
+RC_FILE = rc.rc         #应用程序图标，apd图标及casf图标都在该文件里定义路径
 
-VERSION = DL-Zigbee_V3.1.0
+VERSION = DL-Zigbee_V3.2.0
 QMAKE_TARGET_COMPANY = Genius
 QMAKE_TARGET_DESCRIPTION = PC-software
 QMAKE_TARGET_COPYRIGHT = All rights recive

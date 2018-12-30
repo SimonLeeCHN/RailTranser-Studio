@@ -144,23 +144,21 @@ int StationPort::startConnect(QString portname)
     if(portname != "")
     {
         portSettings.portname = portname;
-        this->setPortName(portSettings.portname);
-        this->setBaudRate(portSettings.baudrate);
-        this->setDataBits(portSettings.databits);
-        this->setParity(portSettings.parity);
-        this->setStopBits(portSettings.stopbits);
-        this->setFlowControl(portSettings.flowcontrol);
+    }
 
-        if(this->open(QIODevice::ReadWrite))
-        {
-            return 1;
-        }else
-        {
-            return 0;
-        }
+    this->setPortName(portSettings.portname);
+    this->setBaudRate(portSettings.baudrate);
+    this->setDataBits(portSettings.databits);
+    this->setParity(portSettings.parity);
+    this->setStopBits(portSettings.stopbits);
+    this->setFlowControl(portSettings.flowcontrol);
+
+    if(!(portSettings.portname.isNull()) && (this->open(QIODevice::ReadWrite)))
+    {
+        return 1;
     }else
     {
-        return -1;
+        return 0;
     }
 }
 
@@ -170,6 +168,11 @@ bool StationPort::stopConnect()
         this->close();
 
     return true;
+}
+
+void StationPort::setPort(QString portname)
+{
+    portSettings.portname = portname;
 }
 
 void StationPort::packetPackage(QList<QByteArray> &list,int port)
@@ -354,7 +357,6 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
     emit RequestThreadSendData(list);
     */
 }
-
 
 ///////////////////////////////////////////////////////////////////
 void DataSendWorker::PackAndSendData(QList<QByteArray> list)

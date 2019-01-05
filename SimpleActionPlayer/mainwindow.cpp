@@ -56,6 +56,7 @@ MainWindow::~MainWindow()
         delete m_pCasfCreatorProcess;
     }
 
+    delete m_pSettingDialog;
     delete m_pStationPort;
     delete ui;
 }

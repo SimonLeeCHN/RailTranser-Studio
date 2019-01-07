@@ -11,6 +11,8 @@
 #define PLAYERSTU_WAITING   3
 #define PLAYERSTU_STOP      4
 
+#define PLAYER_COMMENT      "#"
+
 
 class ActionPlayer :public QObject
 {
@@ -19,8 +21,8 @@ public:
     ActionPlayer();
     ~ActionPlayer();
     bool loadActionFile(QString fileName);
+    bool loadActionList(QList<QString> listName);
     void setActuator(ActionActuator* acac);
-
 
     int getPlayerStatus();
 

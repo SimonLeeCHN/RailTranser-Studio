@@ -10,11 +10,6 @@ SettingDialog::SettingDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
-
-    /*      TAB1        */
-    this->fillAvaliablePorts();
-
 }
 
 SettingDialog::~SettingDialog()
@@ -30,6 +25,13 @@ void SettingDialog::fillAvaliablePorts()
     for(const QSerialPortInfo &info : _infos)
     {
         ui->CB_PortName->addItem(info.portName());
+    }
+
+    //若第一个ComboBox项非空，将其发射给mainwindow作为默认端口
+    if(ui->CB_PortName->count() != 0)
+    {
+        QString _portName = ui->CB_PortName->currentText();
+        emit RequestSetStationPort(_portName);
     }
 }
 

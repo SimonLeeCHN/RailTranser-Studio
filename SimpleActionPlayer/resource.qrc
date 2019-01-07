@@ -7,5 +7,6 @@
         <file alias="ctrol_relocate">resource file/image/relocate.png</file>
         <file alias="ctrol_startLink">resource file/image/startLink.png</file>
         <file alias="ctrol_stopLink">resource file/image/stopLink.png</file>
+        <file alias="ctrol_toolBox">resource file/image/toolBox.png</file>
     </qresource>
 </RCC>

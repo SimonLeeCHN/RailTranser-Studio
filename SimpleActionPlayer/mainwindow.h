@@ -31,6 +31,7 @@ signals:
     void RequestActStopLinkSetEnabled(bool);
     void RequestActRelocateSetEnabled(bool);
     void RequestActEmergencyStopSetEnabled(bool);
+    void RequestActToolBoxSetEnabled(bool);
 
 public slots:
     void printMessage(QString str);
@@ -54,6 +55,7 @@ private slots:
     void onActRelocateTriggered();
     void onActEmergencyStopTriggered();
     void onActAroseSettingDialog();
+    void onActAroseToolBoxDialog();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_pSettingDialog = new SettingDialog(this);
     connect(m_pSettingDialog,&SettingDialog::RequestSetStationPort,this,&MainWindow::OnSetStationPort);
+    m_pSettingDialog->fillAvaliablePorts();
 
     this->initWindowStyle();
     this->initMenu();
@@ -171,6 +172,15 @@ void MainWindow::initMenu()
     connect(this,&MainWindow::RequestActEmergencyStopSetEnabled,_actEmergencyStop,&QAction::setEnabled);
     connect(_actEmergencyStop,&QAction::triggered,this,&MainWindow::onActEmergencyStopTriggered);
 
+    ui->toolBar->addSeparator();
+
+    QAction *_actToolBox = new QAction(QIcon(":/img/ctrol_toolBox"),tr("Tool Box"),this);
+    _actToolBox->setStatusTip(tr("工具箱"));
+    _actToolBox->setEnabled(false);
+    ui->toolBar->addAction(_actToolBox);
+    connect(this,&MainWindow::RequestActToolBoxSetEnabled,_actToolBox,&QAction::setEnabled);
+    connect(_actToolBox,&QAction::triggered,this,&MainWindow::onActAroseToolBoxDialog);
+
 }
 
 /*
@@ -181,8 +191,10 @@ void MainWindow::initMenu()
  */
 void MainWindow::disableUserInterface()
 {
-    //急停按钮
+    //toolbar
     emit RequestActEmergencyStopSetEnabled(false);
+    emit RequestActToolBoxSetEnabled(false);
+
 
     //动作列表
     ui->LW_ActionSortcutList->setEnabled(false);
@@ -195,8 +207,9 @@ void MainWindow::disableUserInterface()
 
 void MainWindow::enableUserInterface()
 {
-    //急停按钮
+    //toolbar
     emit RequestActEmergencyStopSetEnabled(true);
+    emit RequestActToolBoxSetEnabled(true);
 
     //动作列表
     ui->LW_ActionSortcutList->setEnabled(true);
@@ -337,6 +350,7 @@ void MainWindow::componentInit()
 
     //动作执行器
     m_pRealActionActuator = new RealActionActuator();
+    m_pActionPlayer->setActuator(m_pRealActionActuator);
 
     //载体车
     connect(m_pCarrierManager,&CarrierManager::RequestPrintDebugMessage,this,&MainWindow::printMessage);
@@ -497,8 +511,6 @@ void MainWindow::on_LW_ActionSortcutList_itemDoubleClicked(QListWidgetItem *item
     qDebug()<<"filePath: "<<item->data(Qt::UserRole).toString();
 
     m_pActionPlayer->loadActionFile(item->data(Qt::UserRole).toString());
-    m_pActionPlayer->setActuator(m_pRealActionActuator);
-    //m_pActionPlayer->setActuator(new VirtualActionActuator());
     m_pActionPlayer->doNextStep();
 }
 
@@ -595,4 +607,9 @@ void MainWindow::onActEmergencyStopTriggered()
 void MainWindow::onActAroseSettingDialog()
 {
     m_pSettingDialog->show();
+}
+
+void MainWindow::onActAroseToolBoxDialog()
+{
+
 }

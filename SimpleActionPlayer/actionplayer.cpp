@@ -64,13 +64,62 @@ bool ActionPlayer::loadActionFile(QString fileName)
     {
         QString tempStr = tempFile.readLine();
         tempStr.chop(1);
+
+        //抛弃注释部分
+        if(tempStr.contains(PLAYER_COMMENT,Qt::CaseInsensitive))
+        {
+            int _pos = tempStr.indexOf(PLAYER_COMMENT);
+            tempStr = tempStr.left(_pos);
+        }
+
+        //去除字符串首尾空格
+        tempStr = tempStr.trimmed();
+
+        //非空，则加入list
         if(!tempStr.isEmpty())
+        {
             m_lCmdList << tempStr;
+        }
+
     }
 
     tempFile.close();
 
     return true;
+
+}
+
+bool ActionPlayer::loadActionList(QList<QString> listName)
+{
+    //加载初始化
+    m_iCmdPointer = 0;
+    m_lCmdList.clear();
+    m_iPlayerStatus = PLAYERSTU_STANDBY;
+
+    //将输入list载入至内部list
+    while(!listName.isEmpty())
+    {
+        QString _tempStr = listName.first();
+        listName.removeFirst();
+
+        //抛弃注释部分
+        if(_tempStr.contains(PLAYER_COMMENT,Qt::CaseInsensitive))
+        {
+            int _pos = _tempStr.indexOf(PLAYER_COMMENT);
+            _tempStr = _tempStr.left(_pos);
+        }
+
+        //去除字符串首尾空格
+        _tempStr = _tempStr.trimmed();
+
+        //非空，则加入list
+        if(!_tempStr.isEmpty())
+        {
+            m_lCmdList << _tempStr;
+        }
+    }
+
+    return ture;
 
 }
 

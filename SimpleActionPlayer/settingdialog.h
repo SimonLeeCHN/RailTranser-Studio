@@ -14,6 +14,7 @@ class SettingDialog : public QDialog
 public:
     explicit SettingDialog(QWidget *parent = 0);
     ~SettingDialog();
+     void fillAvaliablePorts();
 
 signals:
     void RequestSetStationPort(QString portname);
@@ -29,7 +30,7 @@ private slots:
 
 private:
     Ui::SettingDialog *ui;
-    void fillAvaliablePorts();
+
 };
 
 #endif // SETTINGDIALOG_H

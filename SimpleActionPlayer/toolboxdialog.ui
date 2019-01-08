@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SettingDialog</class>
- <widget class="QDialog" name="SettingDialog">
-  <property name="windowModality">
-   <enum>Qt::NonModal</enum>
-  </property>
+ <class>ToolBoxDialog</class>
+ <widget class="QDialog" name="ToolBoxDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>344</height>
+    <width>578</width>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>设置</string>
-  </property>
-  <property name="whatsThis">
-   <string/>
+   <string>Dialog</string>
   </property>
   <property name="styleSheet">
    <string notr="true">/*
@@ -70,7 +64,7 @@ QWidget#centerWidget {
 }
 
 /**********主界面样式**********/
-QWidget#SettingDialog {
+QWidget#ToolBoxDialog {
         border: 1px solid rgb(50, 50, 50);
         background: rgb(50, 50, 50);
 }
@@ -1090,7 +1084,7 @@ QPushButton#menuButton::menu-indicator{
         padding-right: 3px;
 }</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="font">
@@ -1102,172 +1096,63 @@ QPushButton#menuButton::menu-indicator{
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="TAB_PortSets">
+     <widget class="QWidget" name="TAB_DirectCmd">
       <attribute name="title">
-       <string>端口设置</string>
+       <string>直接命令</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QGroupBox" name="groupBox">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>150</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>-1</pointsize>
-          </font>
-         </property>
          <property name="title">
-          <string>端口</string>
+          <string>直接命令操作</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Arial</family>
-                <pointsize>10</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>端口号：</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="CB_PortName">
-              <property name="minimumSize">
-               <size>
-                <width>90</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>90</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Arial</family>
-                <pointsize>10</pointsize>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="BTN_PortRefrush">
-              <property name="minimumSize">
-               <size>
-                <width>90</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>90</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>端口刷新</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QPlainTextEdit" name="PTE_DirectCmd">
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
-          <item row="1" column="0">
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="BTN_ConnectDetect">
+             <widget class="QPushButton" name="BTN_StartDirectCmd">
               <property name="minimumSize">
                <size>
-                <width>150</width>
-                <height>0</height>
+                <width>0</width>
+                <height>35</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>200</width>
-                <height>40</height>
+                <width>150</width>
+                <height>16777215</height>
                </size>
               </property>
-              <property name="font">
-               <font>
-                <family>Arial</family>
-                <pointsize>10</pointsize>
-               </font>
-              </property>
               <property name="text">
-               <string>链接检测</string>
+               <string>开始</string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
+             <widget class="QPushButton" name="BTN_ClearDirectCmd">
+              <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>20</height>
+                <width>0</width>
+                <height>35</height>
                </size>
               </property>
-             </spacer>
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>清空</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -1275,77 +1160,32 @@ QPushButton#menuButton::menu-indicator{
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>40</height>
+           <width>110</width>
+           <height>16777215</height>
           </size>
          </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>环境</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;God's in his heaven&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;all's right with the world&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;注意：&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;直接命令操作并不&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;会检查您所输入的&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;命令是否正确&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="TAB_StepDebug">
+      <attribute name="title">
+       <string>单步调试</string>
+      </attribute>
+     </widget>
     </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QPushButton" name="BTN_ConfirmSets">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>150</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>确认</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="BTN_CancelSets">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>150</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>取消</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
   </layout>
  </widget>

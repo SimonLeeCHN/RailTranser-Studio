@@ -31,12 +31,27 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //工作站端口
     m_pStationPort = new StationPort();
     connect(m_pStationPort,&StationPort::RequestPrintMessage,this,&MainWindow::printMessage);
 
+    //动作播放器
+    m_pActionPlayer = new ActionPlayer();
+    connect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
+
+    //动作执行器
+    m_pRealActionActuator = new RealActionActuator();
+    m_pActionPlayer->setActuator(m_pRealActionActuator);
+
+    //设置窗口
     m_pSettingDialog = new SettingDialog(this);
     connect(m_pSettingDialog,&SettingDialog::RequestSetStationPort,this,&MainWindow::OnSetStationPort);
     m_pSettingDialog->fillAvaliablePorts();
+
+    //工具箱窗口
+    m_pToolBoxDialog = new ToolBoxDialog(this);
+    connect(m_pToolBoxDialog,&ToolBoxDialog::RequestActionPlayerLoadList,m_pActionPlayer,&ActionPlayer::loadActionList);
+    connect(m_pToolBoxDialog,&ToolBoxDialog::RequestActionPlayerDoNextStep,m_pActionPlayer,&ActionPlayer::doNextStep);
 
     this->initWindowStyle();
     this->initMenu();
@@ -45,20 +60,33 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    //工作站端口
     if(m_pStationPort->isOpen())
         m_pStationPort->stopConnect();
+    delete m_pStationPort;
 
-    if(m_pCarrierManager != NULL)
-        delete m_pCarrierManager;
+    //动作播放器
+    disconnect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
+    delete m_pActionPlayer;
 
+    //动作执行器
+    delete m_pRealActionActuator;
+
+    //设置窗口
+    delete m_pSettingDialog;
+
+    //工具箱窗口
+    disconnect(m_pToolBoxDialog,&ToolBoxDialog::RequestActionPlayerLoadList,m_pActionPlayer,&ActionPlayer::loadActionList);
+    disconnect(m_pToolBoxDialog,&ToolBoxDialog::RequestActionPlayerDoNextStep,m_pActionPlayer,&ActionPlayer::doNextStep);
+    delete m_pToolBoxDialog;
+
+    //casf-creator进程
     if((m_pCasfCreatorProcess != NULL) && (m_pCasfCreatorProcess->state() == QProcess::Running))
     {
         m_pCasfCreatorProcess->close();
         delete m_pCasfCreatorProcess;
     }
 
-    delete m_pSettingDialog;
-    delete m_pStationPort;
     delete ui;
 }
 
@@ -124,7 +152,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.1.0"));
+    setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.2.0"));
 
     //控件初始化
     ui->LW_ActionSortcutList->setEnabled(false);
@@ -176,7 +204,7 @@ void MainWindow::initMenu()
 
     QAction *_actToolBox = new QAction(QIcon(":/img/ctrol_toolBox"),tr("Tool Box"),this);
     _actToolBox->setStatusTip(tr("工具箱"));
-    _actToolBox->setEnabled(false);
+    _actToolBox->setEnabled(true);
     ui->toolBar->addAction(_actToolBox);
     connect(this,&MainWindow::RequestActToolBoxSetEnabled,_actToolBox,&QAction::setEnabled);
     connect(_actToolBox,&QAction::triggered,this,&MainWindow::onActAroseToolBoxDialog);
@@ -344,15 +372,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 
 void MainWindow::componentInit()
 {
-    //动作播放器
-    m_pActionPlayer = new ActionPlayer();
-    connect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
-
-    //动作执行器
-    m_pRealActionActuator = new RealActionActuator();
-    m_pActionPlayer->setActuator(m_pRealActionActuator);
-
-    //载体车
+    //载体车管理器
     connect(m_pCarrierManager,&CarrierManager::RequestPrintDebugMessage,this,&MainWindow::printMessage);
     connect(m_pCarrierManager,&CarrierManager::RequestAfterAllCarrierTouched,this,&MainWindow::OnEnsureAllCarrierAlive);
     connect(m_pCarrierManager,&CarrierManager::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
@@ -368,6 +388,7 @@ void MainWindow::componentInit()
 
 void MainWindow::componentDeinit()
 {
+    //载体车管理器
     disconnect(m_pCarrierManager,&CarrierManager::RequestPrintDebugMessage,this,&MainWindow::printMessage);
     disconnect(m_pCarrierManager,&CarrierManager::RequestAfterAllCarrierTouched,this,&MainWindow::OnEnsureAllCarrierAlive);
     disconnect(m_pCarrierManager,&CarrierManager::RequestUpdateGraphicCarrier,ui->GV_CarrierPathway,&PathwayGV::onUpdateGraphicCarrier);
@@ -379,12 +400,8 @@ void MainWindow::componentDeinit()
 
     disconnect(m_pRealActionActuator,&RealActionActuator::RequestStartPlayingAction,m_pCarrierManager,&CarrierManager::OnStartPlayingAction);
 
-    //动作播放器
-    disconnect(m_pActionPlayer,&ActionPlayer::RequestPrintMessage,this,&MainWindow::printMessage);
-    delete m_pActionPlayer;
-
-    //动作执行器
-    delete m_pRealActionActuator;
+    if(m_pCarrierManager != NULL)
+        delete m_pCarrierManager;
 }
 
 /*      SLOT     */
@@ -551,15 +568,15 @@ void MainWindow::onActStartLinkTriggered()
         QMessageBox::information(this,QString(tr("SerialPort OK")),tr("端口打开成功"));
         this->printMessage(tr("--打开端口成功--"));
 
-        //加载及连接组件
-        this->componentInit();
-
         //界面处理
         emit RequestActStartLinkSetEnabled(false);
         emit RequestActStopLinkSetEnabled(true);
         emit RequestActRelocateSetEnabled(true);
         emit RequestActEmergencyStopSetEnabled(false);
         this->disableUserInterface();
+
+        //组件加载
+        this->componentInit();
 
         //carriermanager 开始接触
         m_pCarrierManager->startTouchRealCarrier();
@@ -590,7 +607,7 @@ void MainWindow::onActStopLinkTriggered()
     emit RequestActEmergencyStopSetEnabled(false);
     this->disableUserInterface();
 
-    //解除组件
+    //组件卸载
     this->componentDeinit();
 }
 
@@ -611,5 +628,5 @@ void MainWindow::onActAroseSettingDialog()
 
 void MainWindow::onActAroseToolBoxDialog()
 {
-
+    m_pToolBoxDialog->show();
 }

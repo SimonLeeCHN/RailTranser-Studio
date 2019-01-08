@@ -2,6 +2,7 @@
 #define SETTINGDIALOG_H
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class SettingDialog;
@@ -11,6 +12,10 @@ class SettingDialog : public QDialog
 {
     Q_OBJECT
 
+private:
+    Ui::SettingDialog *ui;
+    void initWindowStyle();
+
 public:
     explicit SettingDialog(QWidget *parent = 0);
     ~SettingDialog();
@@ -18,6 +23,9 @@ public:
 
 signals:
     void RequestSetStationPort(QString portname);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_BTN_PortRefrush_clicked();
@@ -27,9 +35,6 @@ private slots:
     void on_BTN_ConfirmSets_clicked();
 
     void on_BTN_CancelSets_clicked();
-
-private:
-    Ui::SettingDialog *ui;
 
 };
 

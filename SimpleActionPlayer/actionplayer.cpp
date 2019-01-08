@@ -119,7 +119,7 @@ bool ActionPlayer::loadActionList(QList<QString> listName)
         }
     }
 
-    return ture;
+    return true;
 
 }
 

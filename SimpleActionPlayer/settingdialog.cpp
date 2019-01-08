@@ -10,11 +10,18 @@ SettingDialog::SettingDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->initWindowStyle();
+
 }
 
 SettingDialog::~SettingDialog()
 {
     delete ui;
+}
+
+void SettingDialog::initWindowStyle()
+{
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 }
 
 void SettingDialog::fillAvaliablePorts()
@@ -33,6 +40,13 @@ void SettingDialog::fillAvaliablePorts()
         QString _portName = ui->CB_PortName->currentText();
         emit RequestSetStationPort(_portName);
     }
+}
+
+void SettingDialog::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event)
+
+    this->setVisible(false);
 }
 
 void SettingDialog::on_BTN_PortRefrush_clicked()

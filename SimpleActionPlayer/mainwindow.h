@@ -11,6 +11,7 @@
 #include "actionplayer.h"
 #include "carriermanager.h"
 #include "settingdialog.h"
+#include "toolboxdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -65,6 +66,7 @@ private:
     Ui::MainWindow *ui;
     bool m_bIsProjectFileLoaded = false;
     SettingDialog *m_pSettingDialog;
+    ToolBoxDialog *m_pToolBoxDialog;
 
     int m_iCarrierNum = 1;
     StationPort *m_pStationPort = NULL;

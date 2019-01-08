@@ -37,7 +37,8 @@ SOURCES += \
     carriergraphicsitem.cpp \
     plantformapply.cpp \
     carriermanager.cpp \
-    settingdialog.cpp
+    settingdialog.cpp \
+    toolboxdialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -50,11 +51,13 @@ HEADERS += \
     carriergraphicsitem.h \
     plantformapply.h \
     carriermanager.h \
-    settingdialog.h
+    settingdialog.h \
+    toolboxdialog.h
 
 FORMS += \
         mainwindow.ui \
-    settingdialog.ui
+    settingdialog.ui \
+    toolboxdialog.ui
 
 RESOURCES += \
     resource.qrc

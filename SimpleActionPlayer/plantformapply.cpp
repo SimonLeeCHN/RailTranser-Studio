@@ -1,7 +1,11 @@
 #include "plantformapply.h"
-#include "windows.h"
 #include "iostream"
+#include <QtGlobal>
+
+#ifdef Q_OS_WIN
+#include "windows.h"
 #include "shlobj.h"
+#endif
 
 //-------------------------------------------------------------------------
 // 注册文件图标关联
@@ -14,6 +18,7 @@
 //-------------------------------------------------------------------------
 void RegisterFileRelation(char *strExt,char *strAppKey,char *strAppName, char *strDefaultIcon, char *strDescribe)
 {
+#ifdef  Q_OS_WIN
     char strTemp[_MAX_PATH];
     HKEY hKey;
 
@@ -41,4 +46,5 @@ void RegisterFileRelation(char *strExt,char *strAppKey,char *strAppName, char *s
     RegSetValue(hKey,"",REG_SZ,strTemp,strlen(strTemp)+1);
     RegCloseKey(hKey);
     SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_IDLIST,NULL,NULL);
+#endif
 }

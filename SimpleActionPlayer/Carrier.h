@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QList>
 #include <QTimer>
-#include "StationPort.h"
+#include "stationport.h"
 
 #define ENABLE_HEARTBEAT_ERROR_OPTION  0
 

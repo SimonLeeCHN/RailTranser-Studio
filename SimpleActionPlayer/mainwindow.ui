@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1044</width>
-    <height>600</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1044</width>
-    <height>600</height>
+    <width>800</width>
+    <height>480</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -1133,15 +1133,21 @@ QPushButton#menuButton::menu-indicator{
          <bool>true</bool>
         </property>
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>431</width>
-          <height>270</height>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
          </size>
         </property>
         <property name="font">
@@ -1170,8 +1176,8 @@ QPushButton#menuButton::menu-indicator{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1044</width>
-     <height>28</height>
+     <width>800</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="MENU_file">
@@ -1227,10 +1233,10 @@ QPushButton#menuButton::menu-indicator{
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="features">
-    <set>QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
     <string>ActionList</string>
@@ -1265,8 +1271,14 @@ QPushButton#menuButton::menu-indicator{
        </property>
        <property name="minimumSize">
         <size>
-         <width>270</width>
-         <height>353</height>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>500</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -1283,11 +1295,17 @@ QPushButton#menuButton::menu-indicator{
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
+   <property name="minimumSize">
+    <size>
+     <width>134</width>
+     <height>159</height>
+    </size>
+   </property>
    <property name="features">
-    <set>QDockWidget::NoDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
     <string>CarrierStatus</string>
@@ -1325,8 +1343,8 @@ QPushButton#menuButton::menu-indicator{
        </property>
        <property name="minimumSize">
         <size>
-         <width>300</width>
-         <height>551</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">

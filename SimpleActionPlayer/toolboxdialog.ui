@@ -1163,7 +1163,7 @@ QPushButton#menuButton::menu-indicator{
         <widget class="QLabel" name="label">
          <property name="maximumSize">
           <size>
-           <width>110</width>
+           <width>150</width>
            <height>16777215</height>
           </size>
          </property>

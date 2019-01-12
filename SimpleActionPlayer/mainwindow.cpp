@@ -87,6 +87,10 @@ MainWindow::~MainWindow()
         delete m_pCasfCreatorProcess;
     }
 
+    //carriermanager
+    if(m_pCarrierManager != NULL)
+        delete m_pCarrierManager;
+
     delete ui;
 }
 
@@ -399,9 +403,6 @@ void MainWindow::componentDeinit()
     disconnect(m_pStationPort,&StationPort::RequestSetCarrierStatus,m_pCarrierManager,&CarrierManager::OnRealCarrierHeartbeatBack);
 
     disconnect(m_pRealActionActuator,&RealActionActuator::RequestStartPlayingAction,m_pCarrierManager,&CarrierManager::OnStartPlayingAction);
-
-    if(m_pCarrierManager != NULL)
-        delete m_pCarrierManager;
 }
 
 /*      SLOT     */

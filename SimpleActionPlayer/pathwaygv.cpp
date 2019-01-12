@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QWheelEvent>
 #include <QTimer>
+#include <math.h>
 
 #define RFID_BASEDEV    1
 

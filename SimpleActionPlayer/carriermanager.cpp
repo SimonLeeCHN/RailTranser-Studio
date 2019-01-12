@@ -252,12 +252,13 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
                 //是否所有载体车都处于待机状态
                 if(m_pCarrier->isAllLogicCarrierStatusSame("待机"))
                 {
-                    //actionplayer donextstep
-                    emit RequestActionplayerDoNext();
-                    m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_STANDBY;
-
                     //输出调试语句
                     emit RequestPrintDebugMessage("**载体车运动到位，触发下一语句**");
+
+                    m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_STANDBY;
+
+                    //actionplayer donextstep
+                    emit RequestActionplayerDoNext();
 
                     return;
                 }

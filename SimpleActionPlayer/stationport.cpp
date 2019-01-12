@@ -1,4 +1,4 @@
-#include "StationPort.h"
+#include "stationport.h"
 #include <QtSerialPort/QSerialPortInfo>
 #include <QCoreApplication>
 #include <QTime>

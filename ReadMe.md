@@ -34,6 +34,8 @@ Relocate按钮之和串口是否打开逻辑相关，否则用户在紧急停车
 增加carriermanager进行carrier管理
 包含polling查询与纠错，极大的提高了纠错性
 
-**建立building分支**
+**V3.2.0版本**
 主界面移除了端口配置，端口配置在新设置窗体中完成
+加入了toolbox窗体
+命名不再加入DL-Zigbee
 主界面加入了dockwidget

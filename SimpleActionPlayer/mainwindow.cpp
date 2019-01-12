@@ -204,7 +204,7 @@ void MainWindow::initMenu()
 
     QAction *_actToolBox = new QAction(QIcon(":/img/ctrol_toolBox"),tr("Tool Box"),this);
     _actToolBox->setStatusTip(tr("工具箱"));
-    _actToolBox->setEnabled(true);
+    _actToolBox->setEnabled(false);
     ui->toolBar->addAction(_actToolBox);
     connect(this,&MainWindow::RequestActToolBoxSetEnabled,_actToolBox,&QAction::setEnabled);
     connect(_actToolBox,&QAction::triggered,this,&MainWindow::onActAroseToolBoxDialog);
@@ -623,10 +623,10 @@ void MainWindow::onActEmergencyStopTriggered()
 
 void MainWindow::onActAroseSettingDialog()
 {
-    m_pSettingDialog->show();
+    m_pSettingDialog->open();
 }
 
 void MainWindow::onActAroseToolBoxDialog()
 {
-    m_pToolBoxDialog->show();
+    m_pToolBoxDialog->open();
 }

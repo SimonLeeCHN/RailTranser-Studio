@@ -156,7 +156,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("CASF-ActionPlayer DL-Zigbee_V3.2.0"));
+    setWindowTitle(tr("CASF-ActionPlayer V3.2.1"));
 
     //控件初始化
     ui->LW_ActionSortcutList->setEnabled(false);
@@ -341,7 +341,7 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
         QStringList lineConfigList = lineData.split(" ");
         if(lineConfigList.count() != 4)
         {
-            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
+            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的载体车数据格式"));
             return;
         }
 

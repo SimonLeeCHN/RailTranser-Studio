@@ -56,6 +56,10 @@ void ToolBoxDialog::on_BTN_StartDirectCmd_clicked()
         _cmdList.append(_tempString);
     }
 
+    //在首尾加入STA与END
+    _cmdList.prepend("STA");
+    _cmdList.append("END");
+
     emit RequestActionPlayerLoadList(_cmdList);
     emit RequestActionPlayerDoNextStep();
 }

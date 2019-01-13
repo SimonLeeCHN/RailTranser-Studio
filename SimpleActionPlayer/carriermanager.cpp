@@ -118,7 +118,8 @@ void CarrierManager::inMotionPolling()
         //向x号车发送
         emit RequestSendtoRealCarrier(_heartbeatList,PORT_HEARTBEAT_SEND);
 
-        //开启polling超时定时器
+        //重新开启polling超时定时器
+        m_pollingTimer.stop();
         m_pollingTimer.start(CARRIERMANAGER_POLLING_OUTTIME);
     }
     else

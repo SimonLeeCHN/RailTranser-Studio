@@ -13,7 +13,7 @@
 #define CMD_CMG 5
 #define CMD_JMP 6
 
-int iGroupCmdNum = 1;
+int iGroupCmdNum = 0;
 
 QMap<QString,int> map_StrcmdToCode =
 {
@@ -47,6 +47,7 @@ bool ActionPlayer::loadActionFile(QString fileName)
     }
 
     //加载初始化
+    iGroupCmdNum = 0;
     m_iCmdPointer = 0;
     m_lCmdList.clear();
     m_iPlayerStatus = PLAYERSTU_STANDBY;
@@ -92,6 +93,7 @@ bool ActionPlayer::loadActionFile(QString fileName)
 bool ActionPlayer::loadActionList(QList<QString> listName)
 {
     //加载初始化
+    iGroupCmdNum = 0;
     m_iCmdPointer = 0;
     m_lCmdList.clear();
     m_iPlayerStatus = PLAYERSTU_STANDBY;
@@ -164,7 +166,12 @@ void ActionPlayer::doNextStep()
             emit RequestPrintMessage("STA");
             m_iPlayerStatus = PLAYERSTU_PLAYING;
 
-            this->doNextStep();
+            /*
+             *  自调用，不使用this->doNextStep这种方法，避免递归深度过深
+             *  使用单定时触发器，定时极短时间后触发doNextStep
+             */
+            //this->doNextStep();
+            QTimer::singleShot(10,this,&ActionPlayer::doNextStep);
 
             break;
         }
@@ -179,30 +186,40 @@ void ActionPlayer::doNextStep()
         }
         case CMD_MOV:
         {
-            qDebug()<<"play-cmd: MOV ";
+            QList<QString> _cmdList;
 
-            //使指针指向当前MOV指令
-            m_iCmdPointer--;
+            //先将当前MOV命令加入列表
+            _cmdList << QString(tStrList.value(1) + " " +
+                                tStrList.value(2) + " " +
+                                tStrList.value(3));
 
-            QList<QString> tempList;
-            for(int i = 0;i < iGroupCmdNum;i++)
+            //若有需要组合执行的命令
+            if(iGroupCmdNum > 0)
             {
-                QString tempStr;
-                QStringList tempStrList = m_lCmdList.value(m_iCmdPointer).split(" ");
+                //已将当前MOV命令加入列表
+                iGroupCmdNum--;
 
-                tempStr = tempStrList[1] + " " + tempStrList[2] + " " + tempStrList[3];
-                tempList<<tempStr;
+                while(1)
+                {
+                    QStringList _strList = m_lCmdList.value(m_iCmdPointer).split(" ");
 
-                m_iCmdPointer++;
+                    //有需要组合执行的命令，且同为MOV，则一并加入list发送
+                    if((iGroupCmdNum > 0) && (_strList.value(0) == "MOV"))
+                    {
+                        _cmdList << QString(_strList.value(1) + " " +
+                                            _strList.value(2) + " " +
+                                            _strList.value(3));
 
-                //提示消息
-                QString strMessage = "MOV " + tempStr;
-                emit RequestPrintMessage(strMessage);
+                        iGroupCmdNum--;
+                        m_iCmdPointer++;
+                    }
+                    else
+                        break;
+                }
             }
 
-            iGroupCmdNum = 1;
-
-            this->m_pActuator->generateMotion(tempList);
+            //发送命令列表
+            this->m_pActuator->generateMotion(_cmdList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
 
             break;
@@ -227,7 +244,13 @@ void ActionPlayer::doNextStep()
             iGroupCmdNum = (tStrList[1]).toInt();
 
             emit RequestPrintMessage(QString(tr("CMG %1").arg(iGroupCmdNum)));
-            this->doNextStep();
+
+            /*
+             *  自调用，不使用this->doNextStep这种方法，避免递归深度过深
+             *  使用单定时触发器，定时极短时间后触发doNextStep
+             */
+            //this->doNextStep();
+            QTimer::singleShot(10,this,&ActionPlayer::doNextStep);
 
             break;
         }
@@ -241,7 +264,13 @@ void ActionPlayer::doNextStep()
 
             //修改指针
             m_iCmdPointer = tStrList.value(1).toInt();
-            this->doNextStep();
+
+            /*
+             *  自调用，不使用this->doNextStep这种方法，避免递归深度过深
+             *  使用单定时触发器，定时极短时间后触发doNextStep
+             */
+            //this->doNextStep();
+            QTimer::singleShot(10,this,&ActionPlayer::doNextStep);
 
             break;
         }

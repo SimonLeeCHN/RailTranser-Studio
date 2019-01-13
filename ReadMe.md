@@ -39,3 +39,9 @@ Relocate按钮之和串口是否打开逻辑相关，否则用户在紧急停车
 加入了toolbox窗体
 命名不再加入DL-Zigbee
 主界面加入了dockwidget
+
+**V3.2.1版本**
+inmotionloop每次调用先关闭超时定时器
+actionplayer中需要自调用，不使用this->doNextStep这种方法，避免递归深度过深使用单定时触发器，定时极短时间后触发doNextStep
+CMG逻辑修改，允许混合指令编组（如MOV DEY MOV)
+

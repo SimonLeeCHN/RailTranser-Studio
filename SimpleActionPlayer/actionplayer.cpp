@@ -64,7 +64,6 @@ bool ActionPlayer::loadActionFile(QString fileName)
     while(!tempFile.atEnd())
     {
         QString tempStr = tempFile.readLine();
-        tempStr.chop(1);
 
         //抛弃注释部分
         if(tempStr.contains(PLAYER_COMMENT,Qt::CaseInsensitive))
@@ -73,7 +72,7 @@ bool ActionPlayer::loadActionFile(QString fileName)
             tempStr = tempStr.left(_pos);
         }
 
-        //去除字符串首尾空格
+        //去除字符串首尾空格，换行符
         tempStr = tempStr.trimmed();
 
         //非空，则加入list
@@ -221,6 +220,12 @@ void ActionPlayer::doNextStep()
             //发送命令列表
             this->m_pActuator->generateMotion(_cmdList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
+
+            //若仍有需要组合执行的指令，自调用
+            if(iGroupCmdNum > 0)
+            {
+                QTimer::singleShot(10,this,&ActionPlayer::doNextStep);
+            }
 
             break;
         }

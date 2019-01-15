@@ -1,4 +1,5 @@
 #include "Carrier.h"
+#include "carrierargumentsmap.h"
 #include "QMessageBox"
 #include <QModelIndex>
 
@@ -40,18 +41,6 @@ QMap<QString,int> map_ControlCmd =
 {
     {"急停",0x01},{"复位",0x02}
 };
-
-int ConvertStringToCmd(QMap<QString, int> &map, QString str)
-{
-    return map.value(str);
-}
-
-QString ConvertCmdToString(QMap<QString, int> &map, int val)
-{
-    return map.key(val);
-}
-
-
 
 Carrier::Carrier(QList<QString> profileList, QObject *parent) : QStandardItemModel(profileList.count(),INFORM_NUM,parent)
 {

@@ -1293,7 +1293,7 @@ QPushButton#menuButton::menu-indicator{
       <attribute name="title">
        <string>车辆配置</string>
       </attribute>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>30</x>

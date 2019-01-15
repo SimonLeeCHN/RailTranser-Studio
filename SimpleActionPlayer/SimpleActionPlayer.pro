@@ -52,7 +52,8 @@ HEADERS += \
     plantformapply.h \
     carriermanager.h \
     settingdialog.h \
-    toolboxdialog.h
+    toolboxdialog.h \
+    carrierargumentsmap.h
 
 FORMS += \
         mainwindow.ui \

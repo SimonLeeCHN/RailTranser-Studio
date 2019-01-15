@@ -1,6 +1,7 @@
 #include "pathwaygv.h"
 #include "rfidgraphicsitem.h"
 #include "carriergraphicsitem.h"
+#include "carrierargumentsmap.h"
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -133,7 +134,7 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
             int _iStatus = QString(lineConfigList.value(3)).toInt();
             int _iEnabled = QString(lineConfigList.value(4)).toInt();
 
-            if(_iEnabled != 1)
+            if(ConvertCmdToString(map_CarenableCmd,_iEnabled) != "启用")
                 continue;
 
             if(m_listRfid.count() <= 0)

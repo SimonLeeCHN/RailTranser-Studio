@@ -25,6 +25,7 @@ public:
     bool isAllLogicCarrierMotionAtPoint();
     bool isCarrierNumberLegal(int carrierNumber);
     bool isCarrierStatusLegal(int status);
+    bool isCarrierEnabled(int carrierNumber);
     void updateLogicCarrierStatus(int carNum,int stu,int pos);
     void updateLogicCarrierGoal(QList<QByteArray> actionList);
     int getSpecificLogicCarrierGoal(int carrierNumber);

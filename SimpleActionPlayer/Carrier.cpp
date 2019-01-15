@@ -2,12 +2,13 @@
 #include "QMessageBox"
 #include <QModelIndex>
 
-#define INFORM_NUM              5
-#define INFORM_CARMODEL_COLUMN  0           //车辆模型号
-#define INFORM_CARPOS_COLUMN    1           //车辆位置
-#define INFORM_CARGOAL_COLUMN   2
-#define INFORM_CARSPEED_COLUMN  3           //车辆速度
-#define INFORM_CARSTATUS_COLUMN 4           //车辆状态
+#define INFORM_NUM                  6
+#define INFORM_CARMODEL_COLUMN      0           //车辆模型号
+#define INFORM_CARPOS_COLUMN        1           //车辆位置
+#define INFORM_CARGOAL_COLUMN       2           //车辆目标
+#define INFORM_CARSPEED_COLUMN      3           //车辆速度
+#define INFORM_CARSTATUS_COLUMN     4           //车辆状态
+#define INFORM_CARENABLED_COLUMN    5           //车辆是否使能
 
 #define CARSTATUS_ERROR         0x01
 #define CARSTATUS_STANDBY       0x02
@@ -55,7 +56,7 @@ QString ConvertCmdToString(QMap<QString, int> &map, int val)
 Carrier::Carrier(QList<QString> profileList, QObject *parent) : QStandardItemModel(profileList.count(),INFORM_NUM,parent)
 {
     //设置表头
-    QStringList modelHeader={tr("Model"),tr("Position"),tr("Goal"),tr("Speed"),tr("Status")};
+    QStringList modelHeader={tr("Model"),tr("Position"),tr("Goal"),tr("Speed"),tr("Status"),tr("Enabled")};
     this->setHorizontalHeaderLabels(modelHeader);
 
     m_iCarrierNum = profileList.count();
@@ -76,12 +77,15 @@ Carrier::Carrier(QList<QString> profileList, QObject *parent) : QStandardItemMod
                     break;
                 case INFORM_CARGOAL_COLUMN:
                     this->setData(index,0);
-                break;
+                    break;
                 case INFORM_CARSPEED_COLUMN:
                     this->setData(index,QVariant(ConvertCmdToString(map_SpeedCmd,QString(carProfList.value(2)).toInt())));
                     break;
                 case INFORM_CARSTATUS_COLUMN:
                     this->setData(index,QVariant(ConvertCmdToString(map_StatusCmd,QString(carProfList.value(3)).toInt())));
+                    break;
+                case INFORM_CARENABLED_COLUMN:
+                    this->setData(index,QVariant(ConvertCmdToString(map_CarenableCmd,QString(carProfList.value(4)).toInt())));
                     break;
                 default:
                     break;
@@ -117,6 +121,10 @@ bool Carrier::isAllLogicCarrierMotionAtPoint()
 {
     for(int _carIndex = 1;_carIndex <= m_iCarrierNum;_carIndex++)
     {
+        //跳过未使能车辆
+        if(!(this->isCarrierEnabled(_carIndex)))
+            continue;
+
         //取得车辆目标点
         int _logicGoal = this->getSpecificLogicCarrierGoal(_carIndex);
 
@@ -137,6 +145,10 @@ bool Carrier::isAllLogicCarrierStatusSame(QString status)
 
     for(int i = 0;i < m_iCarrierNum;i++)
     {
+        //跳过未使能车辆
+        if(!(this->isCarrierEnabled(i + 1)))
+            continue;
+
         QString _tempStr = this->data(this->index(i,INFORM_CARSTATUS_COLUMN)).toString();
         if(_tempStr != status)
             return false;
@@ -155,6 +167,19 @@ bool Carrier::isCarrierNumberLegal(int carrierNumber)
 bool Carrier::isCarrierStatusLegal(int status)
 {
     if((status >= CARSTATUS_ERROR) && (status <= CARSTATUS_MISSING))
+        return true;
+    else
+        return false;
+}
+
+bool Carrier::isCarrierEnabled(int carrierNumber)
+{
+    if(!isCarrierNumberLegal(carrierNumber))
+        return false;
+
+    //取得车辆是否使能
+    QString _enabled = this->data(this->index(carrierNumber-1,INFORM_CARENABLED_COLUMN)).toString();
+    if(_enabled == "启用")
         return true;
     else
         return false;
@@ -297,21 +322,3 @@ int Carrier::getSpecificLogicCarrierGoal(int carrierNumber)
     }
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*      SLOT    */

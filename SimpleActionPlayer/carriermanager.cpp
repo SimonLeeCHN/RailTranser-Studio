@@ -105,6 +105,16 @@ void CarrierManager::startRealCarrierEmergencyStop()
  */
 void CarrierManager::inMotionPolling()
 {
+    //跳过未使能车辆
+    while(!(m_pCarrier->isCarrierEnabled(m_iPollingCarrierNumber)))
+    {
+        qDebug()<<QString::number(m_iPollingCarrierNumber) + " 未使能,跳过";
+        if(m_pCarrier->isCarrierNumberLegal(m_iPollingCarrierNumber + 1))
+            m_iPollingCarrierNumber++;
+        else
+            m_iPollingCarrierNumber = 1;
+    }
+
     //数据有效性检查
     if(m_pCarrier->isCarrierNumberLegal(m_iPollingCarrierNumber))
     {

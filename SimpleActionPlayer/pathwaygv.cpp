@@ -126,11 +126,15 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
     for(int i = 0;i < carrierList.count() ; i++)
     {
         QStringList lineConfigList = QString(carrierList.value(i)).split(" ");
-        if(lineConfigList.count() == 4)
+        if(lineConfigList.count() == 5)
         {
-            int number = i+1;
-            int pos = QString(lineConfigList.value(1)).toInt();
-            int status = QString(lineConfigList.value(3)).toInt();
+            int _iNumber = i+1;
+            int _iPos = QString(lineConfigList.value(1)).toInt();
+            int _iStatus = QString(lineConfigList.value(3)).toInt();
+            int _iEnabled = QString(lineConfigList.value(4)).toInt();
+
+            if(_iEnabled != 1)
+                continue;
 
             if(m_listRfid.count() <= 0)
             {
@@ -139,14 +143,14 @@ void PathwayGV::initGraphicCarrier(QList<QString> carrierList)
             }
 
             //点位检查
-            if(((pos/RFID_BASEDEV) < 0) || ((pos/RFID_BASEDEV) > m_listRfid.count()))
+            if(((_iPos/RFID_BASEDEV) < 0) || ((_iPos/RFID_BASEDEV) > m_listRfid.count()))
             {
                 QMessageBox::critical(this,tr("Pathway Carrier Error"),tr("Carrier图形位置错误"));
                 return;
             }
 
-            QPoint tempPoint = transPosnumToGraphicPoint(pos);
-            m_listGraphicCarrier << new CarrierGraphicsItem(tempPoint,status,number);
+            QPoint tempPoint = transPosnumToGraphicPoint(_iPos);
+            m_listGraphicCarrier << new CarrierGraphicsItem(tempPoint,_iStatus,_iNumber);
             m_pScene->addItem(m_listGraphicCarrier.last());
         }
         else

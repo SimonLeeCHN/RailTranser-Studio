@@ -335,23 +335,24 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
     for(int i = 0;i < _tempCarrierCount;i++)
     {
         QString lineData = projectFile.readLine();
+        lineData.trimmed();
         if(lineData.isEmpty())
             break;
 
         QStringList lineConfigList = lineData.split(" ");
-        if(lineConfigList.count() != 4)
+        if(lineConfigList.count() != 5)
         {
             QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的载体车数据格式"));
             return;
         }
 
-        QString model = QString(lineConfigList.value(0));
-        QString pos = QString(lineConfigList.value(1));
-        QString speed = QString(lineConfigList.value(2));
-        QString status = QString(lineConfigList.value(3));
+        QString _strModel = QString(lineConfigList.value(0));
+        QString _strPos = QString(lineConfigList.value(1));
+        QString _strSpeed = QString(lineConfigList.value(2));
+        QString _strStatus = QString(lineConfigList.value(3));
+        QString _strEnabled = QString(lineConfigList.value(4));
 
-        QString str = model + " " + pos + " " + speed + " " + status;
-        carrierList<<str;
+        carrierList << QString(_strModel + " " + _strPos + " " + _strSpeed + " " + _strStatus + " " + _strEnabled);
 
         /*  mainwindow中的m_iCarrierNum在正确的从工程文件添加载体车入列表了才+1
          *  避免工程文件中标明的载体车数目和实际配置列数不符合

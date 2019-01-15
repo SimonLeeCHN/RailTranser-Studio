@@ -44,4 +44,5 @@ Relocate按钮之和串口是否打开逻辑相关，否则用户在紧急停车
 inmotionloop每次调用先关闭超时定时器
 actionplayer中需要自调用，不使用this->doNextStep这种方法，避免递归深度过深使用单定时触发器，定时极短时间后触发doNextStep
 CMG逻辑修改，允许混合指令编组（如MOV DEY MOV)
+增加车辆是否使能判定，在apd文件的carrier项中修改
 

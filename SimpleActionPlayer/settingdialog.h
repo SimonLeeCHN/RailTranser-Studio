@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QStandardItemModel>
+#include "carriertableviewdelegate.h"
 
 namespace Ui {
 class SettingDialog;
@@ -14,6 +16,8 @@ class SettingDialog : public QDialog
 
 private:
     Ui::SettingDialog *ui;
+    QStandardItemModel* m_pCarrier;
+    EnableBoxDelegate m_carrierEnableDelegate;
 
     void initWindowStyle();
 

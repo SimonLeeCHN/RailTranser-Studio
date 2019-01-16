@@ -38,7 +38,8 @@ SOURCES += \
     plantformapply.cpp \
     carriermanager.cpp \
     settingdialog.cpp \
-    toolboxdialog.cpp
+    toolboxdialog.cpp \
+    carriertableviewdelegate.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -53,7 +54,8 @@ HEADERS += \
     carriermanager.h \
     settingdialog.h \
     toolboxdialog.h \
-    carrierargumentsmap.h
+    carrierargumentsmap.h \
+    carriertableviewdelegate.h
 
 FORMS += \
         mainwindow.ui \

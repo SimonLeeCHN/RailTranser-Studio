@@ -5,6 +5,7 @@
 #include <QString>
 #include "QMessageBox"
 #include "mainwindow.h"
+#include "carrierargumentsmap.h"
 
 SettingDialog::SettingDialog(QWidget *parent) :
     QDialog(parent),
@@ -94,18 +95,44 @@ void SettingDialog::on_BTN_CancelSets_clicked()
 
 void SettingDialog::on_BTN_LoadApdFile_clicked()
 {
+    MainWindow* _pParent = (MainWindow*)parent();
+
+    /*  获取参数    */
     QUrl _fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
     ui->LBL_ApdFilePath->setText(_fileUrl.toLocalFile());
 
-    MainWindow* _pParent = (MainWindow*)parent();
     QList<QString> _carrierConfigList = _pParent->getFileCarrierConfigList(_fileUrl);
 
+    /*  添加  */
+    m_pCarrier = new QStandardItemModel(_carrierConfigList.count(),2);
+    QStringList _modelHeader = {tr("Model"),tr("Enabled")};
+    m_pCarrier->setHorizontalHeaderLabels(_modelHeader);
+
+    for(int row = 0;row < _carrierConfigList.count();row++)
+    {
+        QStringList _profileList = QString(_carrierConfigList.value(row)).split(" ");
+        for(int column = 0 ; column < 2 ; column++)
+        {
+            QModelIndex _modelIndex = m_pCarrier->index(row,column);
+            switch(column)
+            {
+                case 0:
+                    m_pCarrier->setData(_modelIndex,QVariant(QString(_profileList.value(0))));
+                    break;
+                case 1:
+                    m_pCarrier->setData(_modelIndex,QVariant(ConvertCmdToString(map_CarenableCmd,QString(_profileList.value(4)).toInt())));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    //设置delegate
+    ui->TV_CarrierConfig->setItemDelegateForColumn(1,&m_carrierEnableDelegate);
+
+    ui->TV_CarrierConfig->setModel(m_pCarrier);
+
     return;
-
-
-
-
-
-
 
 }

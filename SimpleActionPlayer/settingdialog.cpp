@@ -1,6 +1,8 @@
 #include "settingdialog.h"
 #include "ui_settingdialog.h"
 #include <QtSerialPort/QSerialPortInfo>
+#include <QFileDialog>
+#include <QString>
 #include "QMessageBox"
 #include "mainwindow.h"
 
@@ -16,6 +18,7 @@ SettingDialog::SettingDialog(QWidget *parent) :
 
 SettingDialog::~SettingDialog()
 {
+
     delete ui;
 }
 
@@ -85,7 +88,24 @@ void SettingDialog::on_BTN_ConfirmSets_clicked()
 
 void SettingDialog::on_BTN_CancelSets_clicked()
 {
-
     //对话框隐藏
     this->setVisible(false);
+}
+
+void SettingDialog::on_BTN_LoadApdFile_clicked()
+{
+    QUrl _fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
+    ui->LBL_ApdFilePath->setText(_fileUrl.toLocalFile());
+
+    MainWindow* _pParent = (MainWindow*)parent();
+    QList<QString> _carrierConfigList = _pParent->getFileCarrierConfigList(_fileUrl);
+
+    return;
+
+
+
+
+
+
+
 }

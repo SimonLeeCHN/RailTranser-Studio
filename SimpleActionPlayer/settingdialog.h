@@ -14,6 +14,7 @@ class SettingDialog : public QDialog
 
 private:
     Ui::SettingDialog *ui;
+
     void initWindowStyle();
 
 public:
@@ -36,6 +37,7 @@ private slots:
 
     void on_BTN_CancelSets_clicked();
 
+    void on_BTN_LoadApdFile_clicked();
 };
 
 #endif // SETTINGDIALOG_H

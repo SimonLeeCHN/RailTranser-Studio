@@ -251,13 +251,6 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
 {
     //从文件读取工程配置：RFID点，载体车
 
-    if(fileUrl.fileName().right(3).compare(PROJECTFILE_SUFFIX))
-    {
-        //不为对应文件
-        QMessageBox::critical(this,tr("Cannot Open file"),tr("非工程文件"));
-        return;
-    }
-
     //避免重复加载
     if(m_bIsProjectFileLoaded)
     {
@@ -265,114 +258,185 @@ void MainWindow::loadProjectFile(QUrl fileUrl)
         return;
     }
 
-    QString filePath = fileUrl.toLocalFile();
-    QFile projectFile;
-    QFileInfo fileInfo(filePath);
-
-    //判断文件是否存在
-    if(!fileInfo.isFile())
+    /*  RFID    */
+    QList<QString> _rfidList = this->getFileRfidConfigList(fileUrl);
+    if(_rfidList.isEmpty())
     {
-        QMessageBox::critical(this,tr("Cannot Open File"),tr("文件不存在"));
+        QMessageBox::critical(this,tr("加载文件失败"),tr("获得RFID列表空"));
         return;
     }
 
-    //打开文件
-    projectFile.setFileName(filePath);
-    if(!projectFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    /*  CARRIER */
+    QList<QString> _carrierConfigList = this->getFileCarrierConfigList(fileUrl);
+    if(_carrierConfigList.isEmpty())
     {
-        QMessageBox::critical(this,tr("Cannot Open File"),tr("无法打开文件"));
+        QMessageBox::critical(this,tr("加载文件失败"),tr("获得载体车配置列表空"));
         return;
     }
 
-    //1--加载RFID点位
-    int iRfidNum = 0;
-    QList<QString> rfidList;
-    projectFile.seek(0);
-    while(1)
-    {
-        if(0 == QString::compare(PROJECTFILE_TEXT_RFID,projectFile.readLine()))
-        {
-            iRfidNum = QString(projectFile.readLine()).toInt();
-            break;
-        }
-    }
-    for(int i = 0;i < iRfidNum;i++)
-    {
-        QString lineData = projectFile.readLine();
-        if(lineData.isEmpty())
-            break;
-
-        QStringList lineConfigList = lineData.split(" ");
-        if(lineConfigList.count() != 3)
-        {
-            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
-            return;
-        }
-
-        QString x = lineConfigList.value(0);
-        QString y = lineConfigList.value(1);
-        QString number = lineConfigList.value(2);
-        QString str = x + " " + y + " " + number;
-        rfidList<<str;
-    }
     //给pathwayGV传入rfidList初始化RFID视图
-    ui->GV_CarrierPathway->initPathwayRfid(rfidList);
+    ui->GV_CarrierPathway->initPathwayRfid(_rfidList);
 
-
-    //2--加载载体车信息
-    int _tempCarrierCount = 1;
-    m_iCarrierNum =0;
-    QList<QString> carrierList;
-    projectFile.seek(0);
-    while(1)
-    {
-        if(0 == QString::compare(PROJECTFILE_TEXT_CARRIER,projectFile.readLine()))
-        {
-            _tempCarrierCount = QString(projectFile.readLine()).toInt();
-            break;
-        }
-    }
-    for(int i = 0;i < _tempCarrierCount;i++)
-    {
-        QString lineData = projectFile.readLine();
-        lineData.trimmed();
-        if(lineData.isEmpty())
-            break;
-
-        QStringList lineConfigList = lineData.split(" ");
-        if(lineConfigList.count() != 5)
-        {
-            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的载体车数据格式"));
-            return;
-        }
-
-        QString _strModel = QString(lineConfigList.value(0));
-        QString _strPos = QString(lineConfigList.value(1));
-        QString _strSpeed = QString(lineConfigList.value(2));
-        QString _strStatus = QString(lineConfigList.value(3));
-        QString _strEnabled = QString(lineConfigList.value(4));
-
-        carrierList << QString(_strModel + " " + _strPos + " " + _strSpeed + " " + _strStatus + " " + _strEnabled);
-
-        /*  mainwindow中的m_iCarrierNum在正确的从工程文件添加载体车入列表了才+1
-         *  避免工程文件中标明的载体车数目和实际配置列数不符合
-         *  导致遗留问题
-         */
-
-        m_iCarrierNum++;
-
-    }
     //初始化载体车
     m_pCarrierManager = new CarrierManager();
-    m_pCarrierManager->initLogicCarrier(carrierList,this);
+    m_pCarrierManager->initLogicCarrier(_carrierConfigList,this);
     m_pCarrierManager->m_pCarrier->bandViewer(ui->TV_Carrier);
-    ui->GV_CarrierPathway->initGraphicCarrier(carrierList);
+    ui->GV_CarrierPathway->initGraphicCarrier(_carrierConfigList);
 
 
     //已加载工程文件
     m_bIsProjectFileLoaded = true;
     emit RequestActStartLinkSetEnabled(true);
     ui->GV_CarrierPathway->setEnabled(true);
+}
+
+QList<QString> MainWindow::getFileRfidConfigList(QUrl fileUrl)
+{
+    QList<QString> _rfidList,_tempList;
+
+    /*  文件确认    */
+    if(fileUrl.fileName().right(3).compare(PROJECTFILE_SUFFIX))
+    {
+        //不为对应文件
+        QMessageBox::critical(this,tr("Cannot Open file"),tr("非工程文件"));
+        return _rfidList;
+    }
+
+    QFile _projectFile(fileUrl.toLocalFile());
+    if(!_projectFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this,tr("Cannot Open File"),tr("无法打开文件"));
+        _projectFile.close();
+        return _rfidList;
+    }
+
+    /*  加载RFID点位    */
+    int _iRfidNum = 0;
+    _projectFile.seek(0);
+    while(1)
+    {
+        if(0 == QString::compare(PROJECTFILE_TEXT_RFID,_projectFile.readLine()))
+        {
+            _iRfidNum = QString(_projectFile.readLine()).toInt();
+            break;
+        }
+
+        if(_projectFile.atEnd())
+        {
+            QMessageBox::critical(this,tr("错误的文件格式"),("未能正确加载坐标信息"));
+            _projectFile.close();
+            return _rfidList;
+        }
+    }
+
+    for(int i = 0;i < _iRfidNum;i++)
+    {
+        if(_projectFile.atEnd())
+        {
+            QMessageBox::critical(this,tr("错误的文件格式"),("未能正确加载坐标信息"));
+            _projectFile.close();
+            return _rfidList;
+        }
+
+        QString _lineData = _projectFile.readLine();
+        _lineData.trimmed();
+        if(_lineData.isEmpty())
+            break;
+
+        QStringList _lineConfigList = _lineData.split(" ");
+        if(_lineConfigList.count() != 3)
+        {
+            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的RFID点位格式"));
+            _projectFile.close();
+            return _rfidList;
+        }
+
+        QString _x = _lineConfigList.value(0);
+        QString _y = _lineConfigList.value(1);
+        QString _number = _lineConfigList.value(2);
+
+        _tempList << QString(_x + " " + _y + " " + _number).trimmed();
+    }
+
+    _projectFile.close();
+    _rfidList = _tempList;
+    return _rfidList;
+}
+
+QList<QString> MainWindow::getFileCarrierConfigList(QUrl fileUrl)
+{
+    QList<QString> _carrierConfigList,_tempList;
+
+    /*  文件确认    */
+    if(fileUrl.fileName().right(3).compare(PROJECTFILE_SUFFIX))
+    {
+        //不为对应文件
+        QMessageBox::critical(this,tr("Cannot Open file"),tr("非工程文件"));
+        return _carrierConfigList;
+    }
+
+    QFile _projectFile(fileUrl.toLocalFile());
+    if(!_projectFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this,tr("Cannot Open File"),tr("无法打开文件"));
+        _projectFile.close();
+        return _carrierConfigList;
+    }
+
+    /*  加载carrier配置 */
+    int _iCarrierCount = 0;
+    _projectFile.seek(0);
+    while(1)
+    {
+        if(0 == QString::compare(PROJECTFILE_TEXT_CARRIER,_projectFile.readLine()))
+        {
+            _iCarrierCount = QString(_projectFile.readLine()).toInt();
+            break;
+        }
+
+        if(_projectFile.atEnd())
+        {
+            QMessageBox::critical(this,tr("错误的文件格式"),("未能正确加载载体车信息"));
+            _projectFile.close();
+            return _carrierConfigList;
+        }
+    }
+
+    for(int i = 0;i < _iCarrierCount;i++)
+    {
+        if(_projectFile.atEnd())
+        {
+            QMessageBox::critical(this,tr("错误的文件格式"),("未能正确加载载体车信息"));
+            _projectFile.close();
+            return _carrierConfigList;
+        }
+
+        QString _lineData = _projectFile.readLine();
+        _lineData.trimmed();
+        if(_lineData.isEmpty())
+            break;
+
+        QStringList _lineConfigList = _lineData.split(" ");
+        if(_lineConfigList.count() != 5)
+        {
+            QMessageBox::critical(this,tr("Cannot Open File"),tr("无效的载体车数据格式"));
+            _projectFile.close();
+            return _carrierConfigList;
+        }
+
+        QString _strModel = QString(_lineConfigList.value(0));
+        QString _strPos = QString(_lineConfigList.value(1));
+        QString _strSpeed = QString(_lineConfigList.value(2));
+        QString _strStatus = QString(_lineConfigList.value(3));
+        QString _strEnabled = QString(_lineConfigList.value(4));
+
+        _tempList << QString(_strModel + " " + _strPos + " " + _strSpeed + " "
+                               + _strStatus + " " + _strEnabled).trimmed();
+    }
+
+    _projectFile.close();
+    _carrierConfigList = _tempList;
+    return _carrierConfigList;
 }
 
 void MainWindow::componentInit()

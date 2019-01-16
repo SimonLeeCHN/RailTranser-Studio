@@ -26,6 +26,8 @@ public:
     ~MainWindow();
 
     void loadProjectFile(QUrl fileUrl);
+    QList<QString> getFileCarrierConfigList(QUrl fileUrl);
+    QList<QString> getFileRfidConfigList(QUrl fileUrl);
 
 signals:
     void RequestActStartLinkSetEnabled(bool);
@@ -68,7 +70,6 @@ private:
     SettingDialog *m_pSettingDialog;
     ToolBoxDialog *m_pToolBoxDialog;
 
-    int m_iCarrierNum = 1;
     StationPort *m_pStationPort = NULL;
     CarrierManager* m_pCarrierManager = NULL;
     ActionPlayer *m_pActionPlayer = NULL;

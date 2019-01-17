@@ -39,7 +39,8 @@ SOURCES += \
     carriermanager.cpp \
     settingdialog.cpp \
     toolboxdialog.cpp \
-    carriertableviewdelegate.cpp
+    carriertableviewdelegate.cpp \
+    apdfilemanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -55,7 +56,8 @@ HEADERS += \
     settingdialog.h \
     toolboxdialog.h \
     carrierargumentsmap.h \
-    carriertableviewdelegate.h
+    carriertableviewdelegate.h \
+    apdfilemanager.h
 
 FORMS += \
         mainwindow.ui \

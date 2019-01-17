@@ -44,12 +44,11 @@ QLabel{
 }
 
 QToolBar {
-		spacing:15 px;
+		spacing:8px;
         background: rgb(57, 58, 60);
         border: none;
 }
 QToolBar::item {
-        padding: 5px 10px 5px 10px;
         background: transparent;
 }
 QToolBar::item:enabled {
@@ -1217,9 +1216,12 @@ QPushButton#menuButton::menu-indicator{
    </property>
    <property name="iconSize">
     <size>
-     <width>32</width>
-     <height>32</height>
+     <width>24</width>
+     <height>24</height>
     </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>

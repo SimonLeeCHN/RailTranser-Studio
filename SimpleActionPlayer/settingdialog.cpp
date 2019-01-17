@@ -15,10 +15,18 @@ SettingDialog::SettingDialog(QWidget *parent) :
 
     this->initWindowStyle();
 
+    //apd文件管理器
+    m_pApdFileManager = new ApdFileManager(this);
+
 }
 
 SettingDialog::~SettingDialog()
 {
+    if(m_pApdFileManager != NULL)
+        delete m_pApdFileManager;
+
+    if(m_pCarrier != NULL)
+        delete m_pCarrier;
 
     delete ui;
 }
@@ -26,6 +34,28 @@ SettingDialog::~SettingDialog()
 void SettingDialog::initWindowStyle()
 {
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+}
+
+bool SettingDialog::writeCarrierProfile()
+{
+    if(m_pCarrier == NULL)
+        return false;
+
+    /*      从表读取    */
+    QList<QString> _newCarrierEnabledList;
+    for(int _index = 0;_index < m_pCarrier->rowCount();_index++)
+    {
+        QModelIndex _tempIndex = m_pCarrier->index(_index,1);
+        QString _strEnabled = (m_pCarrier->data(_tempIndex)).toString();
+        _newCarrierEnabledList << QString::number(ConvertStringToCmd(map_CarenableCmd,_strEnabled));
+    }
+
+    /*      调用apdfilemanager写入      */
+    if(m_pApdFileManager->setFileCarrierEnabled(ui->LBL_ApdFilePath->text(),_newCarrierEnabledList))
+        return true;
+    else
+        return false;
+
 }
 
 void SettingDialog::fillAvaliablePorts()
@@ -77,11 +107,21 @@ void SettingDialog::on_BTN_ConfirmSets_clicked()
 
     }else
     {
-        QMessageBox::warning(this,tr("端口设置错误"),tr("端口不得为空"));
-        return;
+        QMessageBox::warning(this,tr("端口设置错误"),tr("端口不得为空,端口未设置"));
     }
 
-
+    /*      TAB2        */
+    if(m_pCarrier != NULL)
+    {
+        if(this->writeCarrierProfile())
+        {
+            QMessageBox::critical(this,tr("车辆配置成功"),tr("写入文件成功，请重新载入工程文件"));
+        }
+        else
+        {
+            QMessageBox::critical(this,tr("车辆配置失败"),tr("写入文件错误"));
+        }
+    }
 
     //对话框隐藏
     this->setVisible(false);
@@ -95,15 +135,16 @@ void SettingDialog::on_BTN_CancelSets_clicked()
 
 void SettingDialog::on_BTN_LoadApdFile_clicked()
 {
-    MainWindow* _pParent = (MainWindow*)parent();
-
     /*  获取参数    */
     QUrl _fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
     ui->LBL_ApdFilePath->setText(_fileUrl.toLocalFile());
 
-    QList<QString> _carrierConfigList = _pParent->getFileCarrierConfigList(_fileUrl);
+    QList<QString> _carrierConfigList = m_pApdFileManager->getFileCarrierConfigList(_fileUrl.toLocalFile());
 
     /*  添加  */
+    if(m_pCarrier != NULL)
+        delete m_pCarrier;
+
     m_pCarrier = new QStandardItemModel(_carrierConfigList.count(),2);
     QStringList _modelHeader = {tr("Model"),tr("Enabled")};
     m_pCarrier->setHorizontalHeaderLabels(_modelHeader);

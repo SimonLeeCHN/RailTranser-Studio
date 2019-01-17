@@ -12,6 +12,7 @@
 #include "carriermanager.h"
 #include "settingdialog.h"
 #include "toolboxdialog.h"
+#include "apdfilemanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,8 +27,6 @@ public:
     ~MainWindow();
 
     void loadProjectFile(QUrl fileUrl);
-    QList<QString> getFileCarrierConfigList(QUrl fileUrl);
-    QList<QString> getFileRfidConfigList(QUrl fileUrl);
 
 signals:
     void RequestActStartLinkSetEnabled(bool);
@@ -76,6 +75,7 @@ private:
     RealActionActuator *m_pRealActionActuator = NULL;
 
     QProcess *m_pCasfCreatorProcess = NULL;
+    ApdFileManager* m_pApdFileManager = NULL;
 
     void addActionScriptFile(QList<QUrl> fileList);
     void initWindowStyle();

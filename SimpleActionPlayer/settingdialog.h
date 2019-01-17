@@ -5,6 +5,7 @@
 #include <QCloseEvent>
 #include <QStandardItemModel>
 #include "carriertableviewdelegate.h"
+#include "apdfilemanager.h"
 
 namespace Ui {
 class SettingDialog;
@@ -16,10 +17,12 @@ class SettingDialog : public QDialog
 
 private:
     Ui::SettingDialog *ui;
-    QStandardItemModel* m_pCarrier;
+     ApdFileManager* m_pApdFileManager = NULL;
+    QStandardItemModel* m_pCarrier = NULL;
     EnableBoxDelegate m_carrierEnableDelegate;
 
     void initWindowStyle();
+    bool writeCarrierProfile();
 
 public:
     explicit SettingDialog(QWidget *parent = 0);

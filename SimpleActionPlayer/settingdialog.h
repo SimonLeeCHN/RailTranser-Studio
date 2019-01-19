@@ -18,11 +18,15 @@ class SettingDialog : public QDialog
 private:
     Ui::SettingDialog *ui;
      ApdFileManager* m_pApdFileManager = NULL;
+
     QStandardItemModel* m_pCarrier = NULL;
     EnableBoxDelegate m_carrierEnableDelegate;
+    ReadOnlyDelegate m_carrierReadOnlyDelegate;
+
 
     void initWindowStyle();
     bool writeCarrierProfile();
+    void closeSettingDialog();
 
 public:
     explicit SettingDialog(QWidget *parent = 0);

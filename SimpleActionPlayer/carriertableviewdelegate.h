@@ -4,6 +4,25 @@
 #include <QStyledItemDelegate>
 #include <QComboBox>
 
+class  ReadOnlyDelegate :  public QStyledItemDelegate
+{
+    Q_OBJECT
+public :
+    ReadOnlyDelegate(QObject *parent = 0): QStyledItemDelegate(parent)
+    {
+        Q_UNUSED(parent)
+    }
+    QWidget *createEditor(QWidget*parent,  const QStyleOptionViewItem &option,
+         const  QModelIndex &index)  const
+    {
+        Q_UNUSED(parent)
+        Q_UNUSED(option)
+        Q_UNUSED(index)
+
+        return  NULL;
+    }
+};
+
 class SpeedBoxDelegate : public QStyledItemDelegate
 {
     Q_OBJECT

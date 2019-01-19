@@ -361,6 +361,8 @@ void StationPort::SendPackageData(QList<QByteArray> list,int port)
 ///////////////////////////////////////////////////////////////////
 void DataSendWorker::PackAndSendData(QList<QByteArray> list)
 {
+    Q_UNUSED(list)
+
     /*
     for(int i = 0; i < list.count();i++)
     {

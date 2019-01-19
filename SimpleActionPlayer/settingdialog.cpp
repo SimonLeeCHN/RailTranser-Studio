@@ -80,6 +80,20 @@ void SettingDialog::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event)
 
+    this->closeSettingDialog();
+}
+
+void SettingDialog::closeSettingDialog()
+{
+    /*      TAB2        */
+    ui->LBL_ApdFilePath->setText("");
+    if(m_pCarrier != NULL)
+    {
+        delete m_pCarrier;
+        m_pCarrier = NULL;
+    }
+
+    //对话框隐藏
     this->setVisible(false);
 }
 
@@ -115,7 +129,7 @@ void SettingDialog::on_BTN_ConfirmSets_clicked()
     {
         if(this->writeCarrierProfile())
         {
-            QMessageBox::critical(this,tr("车辆配置成功"),tr("写入文件成功，请重新载入工程文件"));
+            QMessageBox::information(this,tr("车辆配置成功"),tr("写入文件成功，请重新载入工程文件"));
         }
         else
         {
@@ -123,27 +137,36 @@ void SettingDialog::on_BTN_ConfirmSets_clicked()
         }
     }
 
-    //对话框隐藏
-    this->setVisible(false);
+    this->closeSettingDialog();
 }
 
 void SettingDialog::on_BTN_CancelSets_clicked()
 {
-    //对话框隐藏
-    this->setVisible(false);
+    this->closeSettingDialog();
 }
 
 void SettingDialog::on_BTN_LoadApdFile_clicked()
 {
     /*  获取参数    */
     QUrl _fileUrl = QFileDialog::getOpenFileUrl(this,tr("添加现有工程文件"),QUrl("."),"*.apd");
+    if(_fileUrl.isEmpty())
+        return;
+
     ui->LBL_ApdFilePath->setText(_fileUrl.toLocalFile());
 
     QList<QString> _carrierConfigList = m_pApdFileManager->getFileCarrierConfigList(_fileUrl.toLocalFile());
+    if(_carrierConfigList.isEmpty())
+    {
+        QMessageBox::critical(this,tr("添加工程文件错误"),tr("参数列表为空"));
+        return;
+    }
 
     /*  添加  */
     if(m_pCarrier != NULL)
+    {
         delete m_pCarrier;
+        m_pCarrier = NULL;
+    }
 
     m_pCarrier = new QStandardItemModel(_carrierConfigList.count(),2);
     QStringList _modelHeader = {tr("Model"),tr("Enabled")};
@@ -170,6 +193,7 @@ void SettingDialog::on_BTN_LoadApdFile_clicked()
     }
 
     //设置delegate
+    ui->TV_CarrierConfig->setItemDelegateForColumn(0,&m_carrierReadOnlyDelegate);
     ui->TV_CarrierConfig->setItemDelegateForColumn(1,&m_carrierEnableDelegate);
 
     ui->TV_CarrierConfig->setModel(m_pCarrier);

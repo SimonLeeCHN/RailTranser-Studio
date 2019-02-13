@@ -51,7 +51,7 @@ QList<QString> ApdFileManager::getFileRfidConfigList(QString filePath)
         }
 
         QString _lineData = _projectFile.readLine();
-        _lineData.trimmed();
+        _lineData = _lineData.trimmed();
         if(_lineData.isEmpty())
             break;
 
@@ -115,7 +115,7 @@ QList<QString> ApdFileManager::getFileCarrierConfigList(QString filePath)
         }
 
         QString _lineData = _projectFile.readLine();
-        _lineData.trimmed();
+        _lineData = _lineData.trimmed();
         if(_lineData.isEmpty())
             break;
 
@@ -157,7 +157,7 @@ bool ApdFileManager::setFileCarrierConfigList(QString filePath, QList<QString> c
 
     /*      截掉旧的CARRIER配置部分    */
     //注意这里由于是字符串sizeof，已经包含了换行符
-    int _writeBeginPos = _strFileData.indexOf(PROJECTFILE_TEXT_CARRIER) + sizeof(PROJECTFILE_TEXT_CARRIER) - 1;
+    int _writeBeginPos = int(_strFileData.indexOf(PROJECTFILE_TEXT_CARRIER) + sizeof(PROJECTFILE_TEXT_CARRIER) - 1);
     _strFileData.chop(_strFileData.length() - _writeBeginPos);
 
 

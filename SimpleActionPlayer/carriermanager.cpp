@@ -87,6 +87,9 @@ void CarrierManager::startRealCarrierEmergencyStop()
         _tempList << _tempArray;
     }
 
+    //置CM为停止状态
+    m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_STOPED;
+
     //发送急停指令
     emit RequestSendtoRealCarrier(_tempList,PORT_CONTROL_SEND);
 
@@ -105,6 +108,9 @@ void CarrierManager::startRealCarrierEmergencyStop()
  */
 void CarrierManager::inMotionPolling()
 {
+    if(m_iCarrierManagerStatus == CARRIERMANAGER_STATUS_STOPED)
+        return;
+
     //跳过未使能车辆
     while(!(m_pCarrier->isCarrierEnabled(m_iPollingCarrierNumber)))
     {
@@ -162,9 +168,6 @@ void CarrierManager::OnPollingTimerOuttime()
  */
 void CarrierManager::OnStartPlayingAction(QList<QByteArray> actionList)
 {
-    //置CM为INMOTION状态
-    m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_INMOTION;
-
     //更新LogicCarrier目标点
     m_pCarrier->updateLogicCarrierGoal(actionList);
 
@@ -179,6 +182,9 @@ void CarrierManager::OnStartPlayingAction(QList<QByteArray> actionList)
 
     //stationport发送目标点运动指令
     emit RequestSendtoRealCarrier(actionList,PORT_GOALMOVE_SEND);
+
+    //置CM为INMOTION状态
+    m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_INMOTION;
 
     //开启运动中轮询
     m_iPollingCarrierNumber = 1;
@@ -322,6 +328,11 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
 
             this->inMotionPolling();
 
+            break;
+        }
+        case CARRIERMANAGER_STATUS_STOPED:
+        {
+            return;
             break;
         }
         default:

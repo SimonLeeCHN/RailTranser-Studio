@@ -8,7 +8,7 @@ QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = CASF-ActionPlayer
+TARGET = RailTranser-Studio
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -71,5 +71,5 @@ RC_FILE = rc.rc         #应用程序图标，apd图标及casf图标都在该文
 
 VERSION = DL-Zigbee_V3.2.1
 QMAKE_TARGET_COMPANY = Genius
-QMAKE_TARGET_DESCRIPTION = CASF-ActionPlayer
+QMAKE_TARGET_DESCRIPTION = RailTranser-Studio
 QMAKE_TARGET_COPYRIGHT = All rights recive

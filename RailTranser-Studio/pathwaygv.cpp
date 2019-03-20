@@ -24,10 +24,10 @@ PathwayGV::PathwayGV(QWidget *parent) :
     this->setDragMode(QGraphicsView::ScrollHandDrag);
 
     //初始化背景文字
-    m_pBackgroundTextItem = new QGraphicsSimpleTextItem("ACS");
+    m_pBackgroundTextItem = new QGraphicsSimpleTextItem("RailTranser-Studio");
     QFont font;
     font.setFamily("Microsoft YaHei");
-    font.setPointSize(90);
+    font.setPointSize(60);
     m_pBackgroundTextItem->setFont(font);
     m_pBackgroundTextItem->setBrush(QColor(68, 69, 73));
     m_pScene->addItem(m_pBackgroundTextItem);

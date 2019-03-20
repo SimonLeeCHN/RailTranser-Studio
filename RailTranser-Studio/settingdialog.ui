@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
+    <width>616</width>
     <height>520</height>
    </rect>
   </property>
@@ -1100,7 +1100,7 @@ QPushButton#menuButton::menu-indicator{
       </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="TAB_PortSets">
       <attribute name="title">

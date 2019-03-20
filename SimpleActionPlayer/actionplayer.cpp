@@ -157,6 +157,12 @@ void ActionPlayer::doNextStep()
     QStringList tStrList = m_lCmdList.value(m_iCmdPointer).split(" ");
     m_iCmdPointer++;
 
+    //若有需要组合执行的命令
+    if(iGroupCmdNum > 0)
+    {
+        iGroupCmdNum--;     //已执行了一条语句
+    }
+
     switch(map_StrcmdToCode[tStrList[0]])
     {
         case CMD_STA:
@@ -192,34 +198,27 @@ void ActionPlayer::doNextStep()
                                 tStrList.value(2) + " " +
                                 tStrList.value(3));
 
-            //若有需要组合执行的命令
-            if(iGroupCmdNum > 0)
+            QStringList _strList = m_lCmdList.value(m_iCmdPointer).split(" ");
+
+            //有需要组合执行的命令，且同为MOV，则一并加入list发送
+            while((iGroupCmdNum > 0) && (_strList.value(0) == "MOV"))
             {
-                //已将当前MOV命令加入列表
+                _cmdList << QString(_strList.value(1) + " " +
+                                    _strList.value(2) + " " +
+                                    _strList.value(3));
+
                 iGroupCmdNum--;
-
-                while(1)
-                {
-                    QStringList _strList = m_lCmdList.value(m_iCmdPointer).split(" ");
-
-                    //有需要组合执行的命令，且同为MOV，则一并加入list发送
-                    if((iGroupCmdNum > 0) && (_strList.value(0) == "MOV"))
-                    {
-                        _cmdList << QString(_strList.value(1) + " " +
-                                            _strList.value(2) + " " +
-                                            _strList.value(3));
-
-                        iGroupCmdNum--;
-                        m_iCmdPointer++;
-                    }
-                    else
-                        break;
-                }
+                m_iCmdPointer++;
             }
 
             //发送命令列表
             this->m_pActuator->generateMotion(_cmdList);
             this->m_iPlayerStatus = PLAYERSTU_WAITING;
+
+            //输出信息
+            for(int i = 0;i < _cmdList.count();i++)
+                emit RequestPrintMessage(QString("MOV " + _cmdList.at(i)));
+            qDebug()<<"play_cmd: MOV "<<_cmdList;
 
             //若仍有需要组合执行的指令，自调用
             if(iGroupCmdNum > 0)

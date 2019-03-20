@@ -317,7 +317,7 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
             if(m_pCarrier->isAllLogicCarrierStatusSame("待机"))
             {
                 m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_STANDBY;
-
+                this->startTouchRealCarrier();
                 return;
             }
 
@@ -338,13 +338,4 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
         default:
             break;
     }
-
-
-
-
-
-
-
-
-
 }

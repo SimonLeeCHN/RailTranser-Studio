@@ -160,7 +160,7 @@ void MainWindow::initWindowStyle()
 {
     //设置窗口标题
 //    setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
-    setWindowTitle(tr("RailTranser-Studio V3.2.1 190320"));
+    setWindowTitle(tr("RailTranser-Studio V3.3.0 190409"));
 
     //控件初始化
     ui->LW_ActionSortcutList->setEnabled(false);

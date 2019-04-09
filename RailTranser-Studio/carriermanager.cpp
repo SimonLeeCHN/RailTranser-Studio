@@ -317,7 +317,10 @@ void CarrierManager::OnRealCarrierHeartbeatBack(int carNumber, int carStatus, in
             if(m_pCarrier->isAllLogicCarrierStatusSame("待机"))
             {
                 m_iCarrierManagerStatus = CARRIERMANAGER_STATUS_STANDBY;
+
+                //复位动作完成后开始尝试接触载体车
                 this->startTouchRealCarrier();
+
                 return;
             }
 

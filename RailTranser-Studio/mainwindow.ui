@@ -1164,6 +1164,9 @@ QPushButton#menuButton::menu-indicator{
         <property name="readOnly">
          <bool>true</bool>
         </property>
+        <property name="maximumBlockCount">
+         <number>3000</number>
+        </property>
        </widget>
       </item>
      </layout>
@@ -1306,7 +1309,7 @@ QPushButton#menuButton::menu-indicator{
    <property name="minimumSize">
     <size>
      <width>134</width>
-     <height>159</height>
+     <height>162</height>
     </size>
    </property>
    <property name="maximumSize">

@@ -233,8 +233,6 @@ void StationPort::SplitPortdataPackage()
 
     if(isPackdataCame)
         m_RawData = m_RawData.right(m_RawData.length() - (from - packageTailLen));
-    else
-        m_RawData.clear();
 }
 
 void StationPort::IdentifyListCommand()
